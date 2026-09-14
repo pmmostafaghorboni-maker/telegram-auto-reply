@@ -168,12 +168,12 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Please call if it's urgent."
         )
 
-# 📅 ساخت تقویم ۱۰ روزه شمسی
+# 📅 ساخت تقویم ۵ روزه شمسی (از امروز)
 def get_date_keyboard():
     today = jdatetime.date.today()
     keyboard = []
     row = []
-    for i in range(1, 11):
+    for i in range(0, 5):  # 0 = امروز، 4 = ۴ روز بعد
         next_day = today + jdatetime.timedelta(days=i)
         date_str = next_day.strftime("%Y/%m/%d")
         row.append(InlineKeyboardButton(date_str, callback_data=f"date_{date_str}"))
@@ -185,9 +185,9 @@ def get_date_keyboard():
     keyboard.append([InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking")])
     return InlineKeyboardMarkup(keyboard)
 
-# ⏰ ساخت دکمه‌های ساعت
+# ⏰ ساخت دکمه‌های ساعت (۸ صبح تا ۸ شب، هر ۲ ساعت)
 def get_time_keyboard():
-    times = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
+    times = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
     keyboard = []
     row = []
     for t in times:
