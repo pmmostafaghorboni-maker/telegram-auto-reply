@@ -26,14 +26,15 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 2  # 24 hours
+COOLDOWN = 24 * 60 * 60  # 24 hours
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
 INSTAGRAM_ID = "m_gh.tech"
 
-# 🗣️ کلمات کلیدی و پاسخ‌های خودکار
+# 🗣️ کلمات کلیدی و پاسخ‌های خودکار (چندگانه و متنوع)
 KEYWORD_REPLIES = {
+    # ===== تشکر (Thanks) =====
     "thanks": [
         "You're welcome! I'll reply as soon as I can. 🖤",
         "No problem at all! Talk to you soon. ✨",
@@ -44,6 +45,14 @@ KEYWORD_REPLIES = {
         "You're welcome! I'll reply as soon as I can. 🖤",
         "No problem at all! Talk to you soon. ✨",
         "Anytime! I'll get back to you shortly. 🙏",
+    ],
+    "thx": [
+        "You're welcome! 🖤",
+        "No problem! ✨",
+    ],
+    "tnx": [
+        "You're welcome! 🖤",
+        "No problem! ✨",
     ],
     "مرسی": [
         "خواهش می‌کنم! به زودی جوابت رو می‌دم. 🖤",
@@ -56,6 +65,16 @@ KEYWORD_REPLIES = {
         "کاری نکردم! بعداً حرف می‌زنیم. ✨",
         "خواهش! هر وقت نیاز داشتی پیام بده. 🙏",
     ],
+    "ممنونم": [
+        "خواهش می‌کنم! 🖤",
+        "کاری نکردم! ✨",
+    ],
+    "مرسی ازت": [
+        "خواهش می‌کنم! 🖤",
+        "کاری نکردم! ✨",
+    ],
+
+    # ===== خداحافظی (Farewell) =====
     "goodbye": [
         "Goodbye! Talk to you soon. 🌙",
         "See you later! I'll reply when I'm back. ✨",
@@ -66,11 +85,23 @@ KEYWORD_REPLIES = {
         "See you! I'll reply when I'm back. ✨",
         "Take care! 🖤",
     ],
+    "see you": [
+        "See you! Talk to you soon. 🌙",
+        "Catch you later! ✨",
+    ],
+    "take care": [
+        "You too! Talk to you soon. 🖤",
+        "Take care! ✨",
+    ],
     "خداحافظ": [
         "خداحافظ! به زودی جوابت رو می‌دم. 🌙",
         "فعلاً! مراقب خودت باش. ✨",
         "خدانگهدار! بعداً حرف می‌زنیم. 🖤",
         "خداحافظ! زود برمی‌گردم. 💫",
+    ],
+    "خدانگهدار": [
+        "خدانگهدار! به زودی جوابت رو می‌دم. 🌙",
+        "مراقب خودت باش. ✨",
     ],
     "بای": [
         "بای! به زودی جوابت رو می‌دم. 🌙",
@@ -81,6 +112,12 @@ KEYWORD_REPLIES = {
         "فعلاً! به زودی جوابت رو می‌دم. 🌙",
         "بعداً حرف می‌زنیم. ✨",
     ],
+    "خدا نگهدار": [
+        "خدا نگهدار! به زودی جوابت رو می‌دم. 🌙",
+        "مراقب خودت باش. ✨",
+    ],
+
+    # ===== احساسی (Emotional) =====
     "i miss you": [
         "That's so sweet! I'll reply as soon as I can. 🖤",
         "Missing you too! Talk to you soon. ✨",
@@ -89,13 +126,162 @@ KEYWORD_REPLIES = {
         "That means a lot! I'll reply soon. 🖤",
         "Love you too! Talk to you soon. ✨",
     ],
+    "miss you": [
+        "Missing you too! Talk to you soon. ✨",
+    ],
+    "love you": [
+        "Love you too! Talk to you soon. 🖤",
+    ],
     "دلم برات تنگ شده": [
         "چه پیام قشنگی! به زودی جوابت رو می‌دم. 🖤",
         "منم دلم برات تنگ شده! بعداً حرف می‌زنیم. ✨",
     ],
+    "دلم برات تنگ شده بود": [
+        "چه پیام قشنگی! 🖤",
+        "منم دلم برات تنگ شده بود! ✨",
+    ],
     "دوستت دارم": [
         "مرسی از محبتت! به زودی جواب می‌دم. 🖤",
         "منم دوستت دارم! بعداً حرف می‌زنیم. ✨",
+    ],
+    "عاشقتم": [
+        "مرسی از محبتت! 🖤",
+        "منم عاشقتم! ✨",
+    ],
+
+    # ===== احوال‌پرسی (Greetings) =====
+    "how are you": [
+        "Thanks for asking! I'll reply as soon as I can. 😊",
+        "Doing well, thanks! Talk to you soon. ✨",
+    ],
+    "چطوری": [
+        "ممنون که پرسیدی! به زودی جوابت رو می‌دم. 😊",
+        "خوبم مرسی! بعداً حرف می‌زنیم. ✨",
+    ],
+    "خوبی": [
+        "خوبم مرسی! به زودی جوابت رو می‌دم. 😊",
+        "ممنون که پرسیدی! ✨",
+    ],
+    "چه خبر": [
+        "سلامتی! به زودی جوابت رو می‌دم. 😊",
+        "خبری نیست، مرسی! بعداً حرف می‌زنیم. ✨",
+    ],
+    "سلام": [
+        "سلام! به زودی جوابت رو می‌دم. 🖤",
+        "سلام! الان نیستم، بعداً حرف می‌زنیم. ✨",
+        "سلام! مرسی از پیامت. 🙏",
+    ],
+    "hi": [
+        "Hi! I'll reply as soon as I can. 🖤",
+        "Hey! Talk to you soon. ✨",
+    ],
+    "hello": [
+        "Hello! I'll reply as soon as I can. 🖤",
+        "Hey there! Talk to you soon. ✨",
+    ],
+    "hey": [
+        "Hey! I'll reply soon. 🖤",
+        "Hi! Talk to you soon. ✨",
+    ],
+
+    # ===== سوالات رایج (Common Questions) =====
+    "where are you": [
+        "I'm away right now, but I'll reply soon. 🌙",
+        "Not available at the moment, talk soon. ✨",
+    ],
+    "کجایی": [
+        "الان نیستم، به زودی جوابت رو می‌دم. 🌙",
+        "در دسترس نیستم، بعداً حرف می‌زنیم. ✨",
+    ],
+    "چرا جواب نمی‌دی": [
+        "یه کم سرم شلوغه، به زودی جوابت رو می‌دم. 🙏",
+        "الان نیستم، صبر کن. ✨",
+    ],
+    "کی برمی‌گردی": [
+        "به زودی برمی‌گردم، صبر کن. 🙏",
+        "زود برمی‌گردم! ✨",
+    ],
+    "are you there": [
+        "I'm away right now, but I'll reply soon. 🌙",
+        "Not at the moment, talk soon. ✨",
+    ],
+
+    # ===== شب‌بخیر و صبح‌بخیر =====
+    "good night": [
+        "Good night! Talk to you tomorrow. 🌙",
+        "Sweet dreams! ✨",
+    ],
+    "good morning": [
+        "Good morning! I'll reply as soon as I can. ☀️",
+        "Morning! Talk to you soon. ✨",
+    ],
+    "شب بخیر": [
+        "شب بخیر! فردا جوابت رو می‌دم. 🌙",
+        "خواب‌های خوش! ✨",
+    ],
+    "صبح بخیر": [
+        "صبح بخیر! به زودی جوابت رو می‌دم. ☀️",
+        "صبح تو هم بخیر! ✨",
+    ],
+
+    # ===== تبریک و مناسبتی =====
+    "happy birthday": [
+        "Thank you! I'll reply as soon as I can. 🎂",
+        "Thanks so much! Talk soon. ✨",
+    ],
+    "تولدت مبارک": [
+        "مرسی! به زودی جوابت رو می‌دم. 🎂",
+        "ممنون از تبریکت! ✨",
+    ],
+    "congrats": [
+        "Thank you! I'll reply soon. 🎉",
+        "Thanks! Talk to you soon. ✨",
+    ],
+    "تبریک": [
+        "مرسی! به زودی جوابت رو می‌دم. 🎉",
+        "ممنون از تبریکت! ✨",
+    ],
+
+    # ===== عذرخواهی =====
+    "sorry": [
+        "No worries at all! Talk to you soon. 🖤",
+        "It's okay! I'll reply soon. ✨",
+    ],
+    "ببخشید": [
+        "مشکلی نیست! به زودی جوابت رو می‌دم. 🖤",
+        "اشکالی نداره! ✨",
+    ],
+    "شرمنده": [
+        "مشکلی نیست! 🖤",
+        "اشکالی نداره! ✨",
+    ],
+
+    # ===== درخواست فوری =====
+    "urgent": [
+        "Got it, urgent! I'll reply ASAP. 🚨",
+        "Understood! I'll get back to you quickly. ⚡",
+    ],
+    "فوری": [
+        "فهمیدم فوریه! به زودی جوابت رو می‌دم. 🚨",
+        "باشه، سریع جوابت رو می‌دم. ⚡",
+    ],
+    "اضطراری": [
+        "فهمیدم! به زودی جوابت رو می‌دم. 🚨",
+        "باشه، سریع جوابت رو می‌دم. ⚡",
+    ],
+    "asap": [
+        "Got it! I'll reply ASAP. 🚨",
+        "Understood! Talk soon. ⚡",
+    ],
+
+    # ===== تشکر از راه دور =====
+    "خدا خیرت بده": [
+        "مرسی! به زودی جوابت رو می‌دم. 🖤",
+        "لطف داری! ✨",
+    ],
+    "دستت درد نکنه": [
+        "سلامت باشی! به زودی جوابت رو می‌دم. 🖤",
+        "کاری نکردم! ✨",
     ],
 }
 
@@ -221,26 +407,27 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not bot_enabled:
         return
 
+    # ۱. اول کلمه کلیدی رو چک کن (بدون COOLDOWN - همیشه جواب می‌ده)
+    keyword_reply = get_keyword_reply(user_message)
+
+    if keyword_reply:
+        await message.reply_text(keyword_reply)
+        return  # ← return کن تا COOLDOWN اعمال نشه
+
+    # ۲. اگه کلمه کلیدی نبود، COOLDOWN رو چک کن
     if user_id in last_reply_time:
         if current_time - last_reply_time[user_id] < COOLDOWN:
             return
 
-    # ۱. اول ببین کلمه کلیدی داریم
-    keyword_reply = get_keyword_reply(user_message)
-
-    if keyword_reply:
-        # کلمه کلیدی: بدون دکمه شیشه‌ای
-        await message.reply_text(keyword_reply)
-    else:
-        # ۲. اگه کلمه کلیدی نبود، از AI بپرس
-        ai_reply = await get_ai_reply(user_message)
-        # ۳. اگه AI هم جواب نداد، پاسخ معمولی
-        reply_text = ai_reply if ai_reply else get_time_based_message()
-        # پاسخ معمولی: با دکمه شیشه‌ای
-        await message.reply_text(
-            reply_text,
-            reply_markup=get_inline_buttons()
-        )
+    # ۳. از AI بپرس
+    ai_reply = await get_ai_reply(user_message)
+    # ۴. اگه AI هم جواب نداد، پاسخ معمولی
+    reply_text = ai_reply if ai_reply else get_time_based_message()
+    # پاسخ معمولی: با دکمه شیشه‌ای
+    await message.reply_text(
+        reply_text,
+        reply_markup=get_inline_buttons()
+    )
 
     last_reply_time[user_id] = current_time
     stats["replies"] += 1
