@@ -25,7 +25,7 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 24 * 60 * 60  # 24 hours
+COOLDOWN = 1  # 24 hours
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
