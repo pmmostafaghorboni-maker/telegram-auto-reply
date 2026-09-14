@@ -1,4 +1,4 @@
 Flask
 python-telegram-bot[job-queue]
 google-genai
-jdatetime
+persiantools
