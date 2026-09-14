@@ -2,6 +2,14 @@ import os
 import time
 import threading
 from datetime import datetime, time as dt_time
+
+# 🌍 تنظیم منطقه زمانی ایران (باید قبل از jdatetime باشه)
+os.environ['TZ'] = 'Asia/Tehran'
+try:
+    time.tzset()
+except AttributeError:
+    pass  # برای ویندوز
+
 import jdatetime
 from flask import Flask
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -59,11 +67,11 @@ def get_inline_buttons():
     ]
     return InlineKeyboardMarkup(keyboard)
 
-# 🎯 انتخاب متن بر اساس ساعت روز (با تاریخ شمسی)
+# 🎯 انتخاب متن بر اساس ساعت روز
 def get_time_based_message():
     now = datetime.now().time()
     today = jdatetime.date.today()
-    weekday = today.weekday()  # 5=جمعه، 6=شنبه
+    weekday = today.weekday()
 
     if weekday in (5, 6):
         return "It's the weekend — I'll get back to you as soon as I can. ✨"
@@ -160,31 +168,86 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Please call if it's urgent."
         )
 
-# 📅 شروع رزرو وقت
+# 📅 ساخت تقویم ۱۰ روزه شمسی
+def get_date_keyboard():
+    today = jdatetime.date.today()
+    keyboard = []
+    row = []
+    for i in range(1, 11):
+        next_day = today + jdatetime.timedelta(days=i)
+        date_str = next_day.strftime("%Y/%m/%d")
+        row.append(InlineKeyboardButton(date_str, callback_data=f"date_{date_str}"))
+        if len(row) == 2:
+            keyboard.append(row)
+            row = []
+    if row:
+        keyboard.append(row)
+    keyboard.append([InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking")])
+    return InlineKeyboardMarkup(keyboard)
+
+# ⏰ ساخت دکمه‌های ساعت
+def get_time_keyboard():
+    times = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
+    keyboard = []
+    row = []
+    for t in times:
+        row.append(InlineKeyboardButton(t, callback_data=f"time_{t}"))
+        if len(row) == 2:
+            keyboard.append(row)
+            row = []
+    if row:
+        keyboard.append(row)
+    keyboard.append([InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking")])
+    return InlineKeyboardMarkup(keyboard)
+
+# 📅 شروع رزرو
 async def start_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    await query.edit_message_text("📝 Let's book an appointment.\n\nWhat's your name?")
+    user_name = query.from_user.full_name
+    context.user_data['booking_name'] = user_name
+    keyboard = [
+        [InlineKeyboardButton("✅ Yes, that's me", callback_data="confirm_name")],
+        [InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking")]
+    ]
+    await query.edit_message_text(
+        f"📝 Is this your name?\n\n👤 {user_name}",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
     return BOOKING_NAME
 
-async def booking_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data['booking_name'] = update.message.text
-    await update.message.reply_text("📅 What date works for you? (e.g., 1404/07/01)")
+async def confirm_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    await query.edit_message_text(
+        f"📅 Please select a date:\n\n👤 {context.user_data['booking_name']}",
+        reply_markup=get_date_keyboard()
+    )
     return BOOKING_DATE
 
-async def booking_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data['booking_date'] = update.message.text
-    await update.message.reply_text("⏰ What time? (e.g., 14:00)")
+async def select_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    date = query.data.replace("date_", "")
+    context.user_data['booking_date'] = date
+    await query.edit_message_text(
+        f"⏰ Please select a time:\n\n"
+        f"👤 {context.user_data['booking_name']}\n"
+        f"📅 {date}",
+        reply_markup=get_time_keyboard()
+    )
     return BOOKING_TIME
 
-async def booking_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data['booking_time'] = update.message.text
+async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    time_val = query.data.replace("time_", "")
+    context.user_data['booking_time'] = time_val
 
     name = context.user_data.get('booking_name')
     date = context.user_data.get('booking_date')
-    time_val = context.user_data.get('booking_time')
 
-    await update.message.reply_text(
+    await query.edit_message_text(
         f"✅ Booking confirmed!\n\n"
         f"👤 Name: {name}\n"
         f"📅 Date: {date}\n"
@@ -208,7 +271,9 @@ async def booking_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 async def cancel_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("❌ Booking cancelled.")
+    query = update.callback_query
+    await query.answer()
+    await query.edit_message_text("❌ Booking cancelled.")
     return ConversationHandler.END
 
 # 🔐 بررسی ادمین
@@ -276,7 +341,7 @@ async def cmd_cooldown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except ValueError:
         await update.message.reply_text("⛔ Invalid number. Example: /cooldown 2")
 
-# 📅 گزارش روزانه (با تاریخ شمسی)
+# 📅 گزارش روزانه
 async def daily_report(context: ContextTypes.DEFAULT_TYPE):
     global stats
     if ADMIN_ID:
@@ -310,19 +375,19 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler("blacklist", cmd_blacklist))
     application.add_handler(CommandHandler("cooldown", cmd_cooldown))
 
-    # هندلر مکالمه رزرو
+    # هندلر مکالمه رزرو (همه با دکمه شیشه‌ای)
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(start_booking, pattern="^book$")],
         states={
-            BOOKING_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, booking_name)],
-            BOOKING_DATE: [MessageHandler(filters.TEXT & ~filters.COMMAND, booking_date)],
-            BOOKING_TIME: [MessageHandler(filters.TEXT & ~filters.COMMAND, booking_time)],
+            BOOKING_NAME: [CallbackQueryHandler(confirm_name, pattern="^confirm_name$")],
+            BOOKING_DATE: [CallbackQueryHandler(select_date, pattern="^date_")],
+            BOOKING_TIME: [CallbackQueryHandler(select_time, pattern="^time_")],
         },
-        fallbacks=[CommandHandler("cancel", cancel_booking)],
+        fallbacks=[CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$")],
     )
     application.add_handler(conv_handler)
 
-    # دکمه‌ها
+    # دکمه‌ها (Emergency + Instagram)
     application.add_handler(CallbackQueryHandler(button_handler))
 
     # پیام‌های عادی
