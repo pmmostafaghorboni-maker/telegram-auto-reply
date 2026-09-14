@@ -1,5 +1,6 @@
 import os
 import time
+import random
 import threading
 from datetime import datetime, time as dt_time, timedelta
 from zoneinfo import ZoneInfo
@@ -25,11 +26,78 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 2  # 24 hours
+COOLDOWN = 1  # 24 hours
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
 INSTAGRAM_ID = "m_gh.tech"
+
+# 🗣️ کلمات کلیدی و پاسخ‌های خودکار (چندگانه)
+KEYWORD_REPLIES = {
+    "thanks": [
+        "You're welcome! I'll reply as soon as I can. 🖤",
+        "No problem at all! Talk to you soon. ✨",
+        "Anytime! I'll get back to you shortly. 🙏",
+        "Happy to help! Catch you soon. 💫",
+    ],
+    "thank you": [
+        "You're welcome! I'll reply as soon as I can. 🖤",
+        "No problem at all! Talk to you soon. ✨",
+        "Anytime! I'll get back to you shortly. 🙏",
+    ],
+    "مرسی": [
+        "خواهش می‌کنم! به زودی جوابت رو می‌دم. 🖤",
+        "کاری نکردم! بعداً حرف می‌زنیم. ✨",
+        "خواهش! هر وقت نیاز داشتی پیام بده. 🙏",
+        "سلامت باشی! به زودی جواب می‌دم. 💫",
+    ],
+    "ممنون": [
+        "خواهش می‌کنم! به زودی جوابت رو می‌دم. 🖤",
+        "کاری نکردم! بعداً حرف می‌زنیم. ✨",
+        "خواهش! هر وقت نیاز داشتی پیام بده. 🙏",
+    ],
+    "goodbye": [
+        "Goodbye! Talk to you soon. 🌙",
+        "See you later! I'll reply when I'm back. ✨",
+        "Take care! Catch you soon. 🖤",
+    ],
+    "bye": [
+        "Bye! Talk to you soon. 🌙",
+        "See you! I'll reply when I'm back. ✨",
+        "Take care! 🖤",
+    ],
+    "خداحافظ": [
+        "خداحافظ! به زودی جوابت رو می‌دم. 🌙",
+        "فعلاً! مراقب خودت باش. ✨",
+        "خدانگهدار! بعداً حرف می‌زنیم. 🖤",
+        "خداحافظ! زود برمی‌گردم. 💫",
+    ],
+    "بای": [
+        "بای! به زودی جوابت رو می‌دم. 🌙",
+        "فعلاً! مراقب خودت باش. ✨",
+        "خدانگهدار! 🖤",
+    ],
+    "فعلاً": [
+        "فعلاً! به زودی جوابت رو می‌دم. 🌙",
+        "بعداً حرف می‌زنیم. ✨",
+    ],
+    "i miss you": [
+        "That's so sweet! I'll reply as soon as I can. 🖤",
+        "Missing you too! Talk to you soon. ✨",
+    ],
+    "i love you": [
+        "That means a lot! I'll reply soon. 🖤",
+        "Love you too! Talk to you soon. ✨",
+    ],
+    "دلم برات تنگ شده": [
+        "چه پیام قشنگی! به زودی جوابت رو می‌دم. 🖤",
+        "منم دلم برات تنگ شده! بعداً حرف می‌زنیم. ✨",
+    ],
+    "دوستت دارم": [
+        "مرسی از محبتت! به زودی جواب می‌دم. 🖤",
+        "منم دوستت دارم! بعداً حرف می‌زنیم. ✨",
+    ],
+}
 
 # 🤖 تنظیم Gemini AI
 client = None
@@ -57,6 +125,14 @@ def get_iran_today():
     jalali = JalaliDate(now_iran.date())
     return jalali - timedelta(days=3)
 
+# 🔍 پیدا کردن پاسخ مناسب از روی کلمات کلیدی
+def get_keyword_reply(user_message: str):
+    msg_lower = user_message.lower()
+    for keyword, replies in KEYWORD_REPLIES.items():
+        if keyword.lower() in msg_lower:
+            return random.choice(replies)
+    return None
+
 # 🎨 دکمه‌های شیشه‌ای اصلی
 def get_inline_buttons():
     keyboard = [
@@ -72,17 +148,17 @@ def get_inline_buttons():
 
 # 🎯 انتخاب متن بر اساس ساعت روز
 def get_time_based_message():
-    now = datetime.now(IRAN_TZ).time()
-    today = get_iran_today()
-    weekday = today.weekday()  # 0=شنبه ... 5=پنجشنبه, 6=جمعه
+    now = datetime.now(IRAN_TZ)
+    time_now = now.time()
+    weekday = now.weekday()  # 0=دوشنبه, 3=پنجشنبه, 4=جمعه
 
-    if weekday in (5, 6):  # پنجشنبه و جمعه
+    if weekday in (3, 4):  # پنجشنبه و جمعه
         return "It's the weekend — I'll get back to you as soon as I can. ✨"
-    elif now >= dt_time(6, 0) and now < dt_time(12, 0):  # صبح: ۶ تا ۱۲
+    elif time_now >= dt_time(6, 0) and time_now < dt_time(12, 0):
         return "Good morning! I'm not available right now, but I'll reply as soon as I see your message. ☀️"
-    elif now >= dt_time(12, 0) and now < dt_time(20, 30):  # عصر: ۱۲ تا ۲۰:۳۰
+    elif time_now >= dt_time(12, 0) and time_now < dt_time(20, 30):
         return AUTO_REPLY_TEXT
-    else:  # شب: ۲۰:۳۰ تا ۶ صبح
+    else:
         return "Good night! I'm asleep right now — I'll get back to you tomorrow. 🌙"
 
 @app.route('/')
@@ -90,7 +166,7 @@ def get_time_based_message():
 def home():
     return "Bot is running"
 
-# 🤖 پاسخ هوشمند AI
+# 🤖 پاسخ هوشمند AI (فقط برای پیام‌های احساسی که توی KEYWORD_REPLIES نباشن)
 async def get_ai_reply(user_message: str):
     if not client:
         return None
@@ -102,7 +178,7 @@ Today's date (Shamsi): {today}
 
 Analyze the user's message below.
 
-- If the message is an EMOTIONAL message (like "I miss you", "I love you", "دلم برات تنگ شده", "دوستت دارم") OR a FAREWELL message (like "goodbye", "خداحافظ", "bye", "فعلاً", "بای"), generate a SHORT, warm auto-reply in the SAME language as the message.
+- If the message is an EMOTIONAL message (like "I miss you", "I love you", "دلم برات تنگ شده", "دوستت دارم") OR a FAREWELL message, generate a SHORT, warm auto-reply in the SAME language as the message.
 - If the message is NOT emotional and NOT a farewell, reply with exactly: "NO_AI_REPLY"
 
 User message: "{user_message}"
@@ -149,8 +225,16 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if current_time - last_reply_time[user_id] < COOLDOWN:
             return
 
-    ai_reply = await get_ai_reply(user_message)
-    reply_text = ai_reply if ai_reply else get_time_based_message()
+    # ۱. اول ببین کلمه کلیدی داریم
+    keyword_reply = get_keyword_reply(user_message)
+    
+    if keyword_reply:
+        reply_text = keyword_reply
+    else:
+        # ۲. اگه کلمه کلیدی نبود، از AI بپرس
+        ai_reply = await get_ai_reply(user_message)
+        # ۳. اگه AI هم جواب نداد، پاسخ معمولی بر اساس ساعت
+        reply_text = ai_reply if ai_reply else get_time_based_message()
 
     await message.reply_text(
         reply_text,
@@ -331,7 +415,7 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     return ConversationHandler.END
 
-# 🔙 بازگشت به صفحه اصلی (پیام خودکار)
+# 🔙 بازگشت به صفحه اصلی
 async def back_to_main_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
