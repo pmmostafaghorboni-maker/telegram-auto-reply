@@ -26,13 +26,13 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 1  # 24 hours
+COOLDOWN = 24 * 60 * 60  # 24 hours
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
 INSTAGRAM_ID = "m_gh.tech"
 
-# 🗣️ کلمات کلیدی و پاسخ‌های خودکار (چندگانه)
+# 🗣️ کلمات کلیدی و پاسخ‌های خودکار
 KEYWORD_REPLIES = {
     "thanks": [
         "You're welcome! I'll reply as soon as I can. 🖤",
@@ -166,7 +166,7 @@ def get_time_based_message():
 def home():
     return "Bot is running"
 
-# 🤖 پاسخ هوشمند AI (فقط برای پیام‌های احساسی که توی KEYWORD_REPLIES نباشن)
+# 🤖 پاسخ هوشمند AI
 async def get_ai_reply(user_message: str):
     if not client:
         return None
@@ -227,19 +227,21 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # ۱. اول ببین کلمه کلیدی داریم
     keyword_reply = get_keyword_reply(user_message)
-    
+
     if keyword_reply:
-        reply_text = keyword_reply
+        # کلمه کلیدی: بدون دکمه شیشه‌ای
+        await message.reply_text(keyword_reply)
     else:
         # ۲. اگه کلمه کلیدی نبود، از AI بپرس
         ai_reply = await get_ai_reply(user_message)
-        # ۳. اگه AI هم جواب نداد، پاسخ معمولی بر اساس ساعت
+        # ۳. اگه AI هم جواب نداد، پاسخ معمولی
         reply_text = ai_reply if ai_reply else get_time_based_message()
+        # پاسخ معمولی: با دکمه شیشه‌ای
+        await message.reply_text(
+            reply_text,
+            reply_markup=get_inline_buttons()
+        )
 
-    await message.reply_text(
-        reply_text,
-        reply_markup=get_inline_buttons()
-    )
     last_reply_time[user_id] = current_time
     stats["replies"] += 1
 
@@ -272,7 +274,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=get_inline_buttons()
         )
 
-# 📅 ساخت تقویم ۵ روزه شمسی (از امروز ایران)
+# 📅 ساخت تقویم ۵ روزه
 def get_date_keyboard():
     today = get_iran_today()
     keyboard = []
@@ -292,7 +294,7 @@ def get_date_keyboard():
     ])
     return InlineKeyboardMarkup(keyboard)
 
-# ⏰ ساخت دکمه‌های ساعت (۸ صبح تا ۸ شب، هر ۲ ساعت)
+# ⏰ ساخت دکمه‌های ساعت
 def get_time_keyboard():
     times = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
     keyboard = []
@@ -310,7 +312,7 @@ def get_time_keyboard():
     ])
     return InlineKeyboardMarkup(keyboard)
 
-# 📅 شروع رزرو - تایید اسم (با دکمه Back)
+# 📅 شروع رزرو
 async def start_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -329,7 +331,6 @@ async def start_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_NAME
 
-# 📅 تایید اسم -> نمایش تقویم با تاریخ امروز
 async def confirm_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -342,7 +343,6 @@ async def confirm_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_DATE
 
-# 📅 انتخاب تاریخ -> نمایش ساعت
 async def select_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -356,16 +356,13 @@ async def select_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_TIME
 
-# ⏰ انتخاب ساعت -> نمایش صفحه تایید نهایی
 async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     time_val = query.data.replace("time_", "")
     context.user_data['booking_time'] = time_val
-
     name = context.user_data.get('booking_name')
     date = context.user_data.get('booking_date')
-
     keyboard = [
         [InlineKeyboardButton("✅ Confirm", callback_data="confirm_booking")],
         [
@@ -383,15 +380,12 @@ async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_CONFIRM
 
-# ✅ تایید نهایی
 async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-
     name = context.user_data.get('booking_name')
     date = context.user_data.get('booking_date')
     time_val = context.user_data.get('booking_time')
-
     await query.edit_message_text(
         f"✅ Booking confirmed!\n\n"
         f"👤 Name: {name}\n"
@@ -399,7 +393,6 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"⏰ Time: {time_val}\n\n"
         f"I'll get back to you soon. ✨"
     )
-
     if ADMIN_ID:
         try:
             await context.bot.send_message(
@@ -412,10 +405,8 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         except Exception as e:
             print(f"Error notifying admin: {e}")
-
     return ConversationHandler.END
 
-# 🔙 بازگشت به صفحه اصلی
 async def back_to_main_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -425,7 +416,6 @@ async def back_to_main_booking(update: Update, context: ContextTypes.DEFAULT_TYP
     )
     return ConversationHandler.END
 
-# 🔙 بازگشت به مرحله تایید اسم
 async def back_to_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -443,7 +433,6 @@ async def back_to_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_NAME
 
-# 🔙 بازگشت به مرحله انتخاب تاریخ
 async def back_to_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -456,7 +445,6 @@ async def back_to_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_DATE
 
-# 🔙 بازگشت به مرحله انتخاب ساعت
 async def back_to_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -469,7 +457,6 @@ async def back_to_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_TIME
 
-# ❌ انصراف
 async def cancel_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -483,7 +470,6 @@ async def check_admin(update: Update) -> bool:
         return False
     return True
 
-# 📊 دستور آمار
 async def cmd_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_admin(update):
         return
@@ -495,7 +481,6 @@ async def cmd_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Active users: {len(stats['users'])}"
     )
 
-# 🔴 خاموش کردن ربات
 async def cmd_off(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global bot_enabled
     if not await check_admin(update):
@@ -503,7 +488,6 @@ async def cmd_off(update: Update, context: ContextTypes.DEFAULT_TYPE):
     bot_enabled = False
     await update.message.reply_text("🔴 Bot turned OFF.")
 
-# 🟢 روشن کردن ربات
 async def cmd_on(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global bot_enabled
     if not await check_admin(update):
@@ -511,7 +495,6 @@ async def cmd_on(update: Update, context: ContextTypes.DEFAULT_TYPE):
     bot_enabled = True
     await update.message.reply_text("🟢 Bot turned ON.")
 
-# 🚫 اضافه کردن به لیست سیاه
 async def cmd_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_admin(update):
         return
@@ -522,7 +505,6 @@ async def cmd_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Usage: /blacklist [user_id]")
 
-# ⏰ تغییر زمان Cooldown
 async def cmd_cooldown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global COOLDOWN
     if not await check_admin(update):
@@ -541,7 +523,6 @@ async def cmd_cooldown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except ValueError:
         await update.message.reply_text("⛔ Invalid number. Example: /cooldown 2")
 
-# 📅 گزارش روزانه
 async def daily_report(context: ContextTypes.DEFAULT_TYPE):
     global stats
     if ADMIN_ID:
@@ -558,24 +539,20 @@ async def daily_report(context: ContextTypes.DEFAULT_TYPE):
             print(f"Error sending report: {e}")
     stats = {"messages": 0, "replies": 0, "users": set()}
 
-# 🌐 اجرای وب‌سرور
 def run_flask():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
 
-# 🚀 اجرای اصلی
 if __name__ == '__main__':
     threading.Thread(target=run_flask, daemon=True).start()
 
     application = ApplicationBuilder().token(BOT_TOKEN).build()
 
-    # دستورات ادمین
     application.add_handler(CommandHandler("stats", cmd_stats))
     application.add_handler(CommandHandler("off", cmd_off))
     application.add_handler(CommandHandler("on", cmd_on))
     application.add_handler(CommandHandler("blacklist", cmd_blacklist))
     application.add_handler(CommandHandler("cooldown", cmd_cooldown))
 
-    # ⚠️ اول ConversationHandler (رزرو)
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(start_booking, pattern="^book$")],
         states={
@@ -604,13 +581,10 @@ if __name__ == '__main__':
     )
     application.add_handler(conv_handler)
 
-    # ⚠️ بعد هندلر عمومی (Emergency + Instagram + Back)
     application.add_handler(CallbackQueryHandler(button_handler))
 
-    # پیام‌های عادی
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
 
-    # گزارش روزانه ساعت ۲۱:۰۰
     application.job_queue.run_daily(daily_report, time=dt_time(21, 0))
 
     print("Bot is running...")
