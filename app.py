@@ -1,13 +1,13 @@
 import os
 import time
 import threading
-from datetime import datetime, time as dt_time
+from datetime import datetime, time as dt_time, timedelta
 from zoneinfo import ZoneInfo
 
 # 🌍 منطقه زمانی ایران
 IRAN_TZ = ZoneInfo("Asia/Tehran")
 
-import jdatetime
+from persiantools.jdatetime import JalaliDate
 from flask import Flask
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
@@ -25,7 +25,7 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 1  # 24 hours
+COOLDOWN = 24 * 60 * 60  # 24 hours
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
@@ -54,11 +54,11 @@ BOOKING_NAME, BOOKING_DATE, BOOKING_TIME = range(3)
 # 🌍 تاریخ امروز ایران به شمسی
 def get_iran_today():
     now_iran = datetime.now(IRAN_TZ)
-    return jdatetime.date.fromgregorian(
-        year=now_iran.year,
-        month=now_iran.month,
-        day=now_iran.day
-    )
+    return JalaliDate(now_iran.date())
+
+# 🕐 ساعت فعلی ایران
+def get_iran_time():
+    return datetime.now(IRAN_TZ).strftime("%H:%M:%S")
 
 # 🎨 دکمه‌های شیشه‌ای
 def get_inline_buttons():
@@ -180,7 +180,7 @@ def get_date_keyboard():
     keyboard = []
     row = []
     for i in range(0, 5):
-        next_day = today + jdatetime.timedelta(days=i)
+        next_day = today + timedelta(days=i)
         date_str = next_day.strftime("%Y/%m/%d")
         row.append(InlineKeyboardButton(date_str, callback_data=f"date_{date_str}"))
         if len(row) == 2:
@@ -188,7 +188,6 @@ def get_date_keyboard():
             row = []
     if row:
         keyboard.append(row)
-    # دکمه‌های بازگشت و انصراف
     keyboard.append([
         InlineKeyboardButton("🔙 Back", callback_data="back_to_name"),
         InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking"),
@@ -207,7 +206,6 @@ def get_time_keyboard():
             row = []
     if row:
         keyboard.append(row)
-    # دکمه‌های بازگشت و انصراف
     keyboard.append([
         InlineKeyboardButton("🔙 Back", callback_data="back_to_date"),
         InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking"),
@@ -230,28 +228,36 @@ async def start_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_NAME
 
+# 📅 تایید اسم -> نمایش تقویم با تاریخ امروز
 async def confirm_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    today = get_iran_today().strftime("%Y/%m/%d")
     await query.edit_message_text(
-        f"📅 Please select a date:\n\n👤 {context.user_data['booking_name']}",
+        f"📅 Please select a date:\n\n"
+        f"👤 Name: {context.user_data['booking_name']}\n"
+        f"📆 Today: {today}",
         reply_markup=get_date_keyboard()
     )
     return BOOKING_DATE
 
+# 📅 انتخاب تاریخ -> نمایش ساعت با تاریخ و ساعت فعلی
 async def select_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     date = query.data.replace("date_", "")
     context.user_data['booking_date'] = date
+    current_time = get_iran_time()
     await query.edit_message_text(
         f"⏰ Please select a time:\n\n"
-        f"👤 {context.user_data['booking_name']}\n"
-        f"📅 {date}",
+        f"👤 Name: {context.user_data['booking_name']}\n"
+        f"📅 Date: {date}\n"
+        f"🕐 Current Time: {current_time}",
         reply_markup=get_time_keyboard()
     )
     return BOOKING_TIME
 
+# ⏰ انتخاب ساعت -> تایید نهایی
 async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -284,7 +290,7 @@ async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     return ConversationHandler.END
 
-# 🔙 بازگشت به مرحله قبل
+# 🔙 بازگشت به مرحله تایید اسم
 async def back_to_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -299,15 +305,20 @@ async def back_to_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_NAME
 
+# 🔙 بازگشت به مرحله انتخاب تاریخ
 async def back_to_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    today = get_iran_today().strftime("%Y/%m/%d")
     await query.edit_message_text(
-        f"📅 Please select a date:\n\n👤 {context.user_data['booking_name']}",
+        f"📅 Please select a date:\n\n"
+        f"👤 Name: {context.user_data['booking_name']}\n"
+        f"📆 Today: {today}",
         reply_markup=get_date_keyboard()
     )
     return BOOKING_DATE
 
+# ❌ انصراف
 async def cancel_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -413,7 +424,7 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler("blacklist", cmd_blacklist))
     application.add_handler(CommandHandler("cooldown", cmd_cooldown))
 
-    # هندلر مکالمه رزرو (همه با دکمه شیشه‌ای)
+    # هندلر مکالمه رزرو
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(start_booking, pattern="^book$")],
         states={
