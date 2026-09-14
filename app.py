@@ -2,13 +2,10 @@ import os
 import time
 import threading
 from datetime import datetime, time as dt_time
+from zoneinfo import ZoneInfo
 
-# 🌍 تنظیم منطقه زمانی ایران (باید قبل از jdatetime باشه)
-os.environ['TZ'] = 'Asia/Tehran'
-try:
-    time.tzset()
-except AttributeError:
-    pass  # برای ویندوز
+# 🌍 منطقه زمانی ایران
+IRAN_TZ = ZoneInfo("Asia/Tehran")
 
 import jdatetime
 from flask import Flask
@@ -28,7 +25,7 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 2  # 24 hours
+COOLDOWN = 1  # 24 hours
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
@@ -54,6 +51,15 @@ stats = {"messages": 0, "replies": 0, "users": set()}
 # 🎯 مراحل رزرو وقت
 BOOKING_NAME, BOOKING_DATE, BOOKING_TIME = range(3)
 
+# 🌍 تاریخ امروز ایران به شمسی
+def get_iran_today():
+    now_iran = datetime.now(IRAN_TZ)
+    return jdatetime.date.fromgregorian(
+        year=now_iran.year,
+        month=now_iran.month,
+        day=now_iran.day
+    )
+
 # 🎨 دکمه‌های شیشه‌ای
 def get_inline_buttons():
     keyboard = [
@@ -69,8 +75,8 @@ def get_inline_buttons():
 
 # 🎯 انتخاب متن بر اساس ساعت روز
 def get_time_based_message():
-    now = datetime.now().time()
-    today = jdatetime.date.today()
+    now = datetime.now(IRAN_TZ).time()
+    today = get_iran_today()
     weekday = today.weekday()
 
     if weekday in (5, 6):
@@ -92,7 +98,7 @@ async def get_ai_reply(user_message: str):
     if not client:
         return None
     try:
-        today = jdatetime.date.today().strftime("%Y/%m/%d")
+        today = get_iran_today().strftime("%Y/%m/%d")
         prompt = f"""
 You are an auto-reply assistant for a person who is currently unavailable.
 Today's date (Shamsi): {today}
@@ -168,12 +174,12 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Please call if it's urgent."
         )
 
-# 📅 ساخت تقویم ۵ روزه شمسی (از امروز)
+# 📅 ساخت تقویم ۵ روزه شمسی (از امروز ایران)
 def get_date_keyboard():
-    today = jdatetime.date.today()
+    today = get_iran_today()
     keyboard = []
     row = []
-    for i in range(0, 5):  # 0 = امروز، 4 = ۴ روز بعد
+    for i in range(0, 5):
         next_day = today + jdatetime.timedelta(days=i)
         date_str = next_day.strftime("%Y/%m/%d")
         row.append(InlineKeyboardButton(date_str, callback_data=f"date_{date_str}"))
@@ -182,7 +188,11 @@ def get_date_keyboard():
             row = []
     if row:
         keyboard.append(row)
-    keyboard.append([InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking")])
+    # دکمه‌های بازگشت و انصراف
+    keyboard.append([
+        InlineKeyboardButton("🔙 Back", callback_data="back_to_name"),
+        InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking"),
+    ])
     return InlineKeyboardMarkup(keyboard)
 
 # ⏰ ساخت دکمه‌های ساعت (۸ صبح تا ۸ شب، هر ۲ ساعت)
@@ -197,7 +207,11 @@ def get_time_keyboard():
             row = []
     if row:
         keyboard.append(row)
-    keyboard.append([InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking")])
+    # دکمه‌های بازگشت و انصراف
+    keyboard.append([
+        InlineKeyboardButton("🔙 Back", callback_data="back_to_date"),
+        InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking"),
+    ])
     return InlineKeyboardMarkup(keyboard)
 
 # 📅 شروع رزرو
@@ -270,6 +284,30 @@ async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     return ConversationHandler.END
 
+# 🔙 بازگشت به مرحله قبل
+async def back_to_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    user_name = context.user_data.get('booking_name', query.from_user.full_name)
+    keyboard = [
+        [InlineKeyboardButton("✅ Yes, that's me", callback_data="confirm_name")],
+        [InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking")]
+    ]
+    await query.edit_message_text(
+        f"📝 Is this your name?\n\n👤 {user_name}",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+    return BOOKING_NAME
+
+async def back_to_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    await query.edit_message_text(
+        f"📅 Please select a date:\n\n👤 {context.user_data['booking_name']}",
+        reply_markup=get_date_keyboard()
+    )
+    return BOOKING_DATE
+
 async def cancel_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -287,7 +325,7 @@ async def check_admin(update: Update) -> bool:
 async def cmd_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_admin(update):
         return
-    today = jdatetime.date.today().strftime("%Y/%m/%d")
+    today = get_iran_today().strftime("%Y/%m/%d")
     await update.message.reply_text(
         f"📊 Bot Stats — {today}\n"
         f"Messages received: {stats['messages']}\n"
@@ -346,7 +384,7 @@ async def daily_report(context: ContextTypes.DEFAULT_TYPE):
     global stats
     if ADMIN_ID:
         try:
-            today = jdatetime.date.today().strftime("%Y/%m/%d")
+            today = get_iran_today().strftime("%Y/%m/%d")
             await context.bot.send_message(
                 chat_id=ADMIN_ID,
                 text=f"📈 Daily Report — {today}\n"
@@ -379,9 +417,20 @@ if __name__ == '__main__':
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(start_booking, pattern="^book$")],
         states={
-            BOOKING_NAME: [CallbackQueryHandler(confirm_name, pattern="^confirm_name$")],
-            BOOKING_DATE: [CallbackQueryHandler(select_date, pattern="^date_")],
-            BOOKING_TIME: [CallbackQueryHandler(select_time, pattern="^time_")],
+            BOOKING_NAME: [
+                CallbackQueryHandler(confirm_name, pattern="^confirm_name$"),
+                CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$"),
+            ],
+            BOOKING_DATE: [
+                CallbackQueryHandler(select_date, pattern="^date_"),
+                CallbackQueryHandler(back_to_name, pattern="^back_to_name$"),
+                CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$"),
+            ],
+            BOOKING_TIME: [
+                CallbackQueryHandler(select_time, pattern="^time_"),
+                CallbackQueryHandler(back_to_date, pattern="^back_to_date$"),
+                CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$"),
+            ],
         },
         fallbacks=[CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$")],
     )
