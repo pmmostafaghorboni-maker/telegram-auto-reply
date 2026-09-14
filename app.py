@@ -19,7 +19,7 @@ ADMIN_ID = os.environ.get("ADMIN_ID")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible. 🙏"
 COOLDOWN = 6 * 60 * 60  # 6 hours
 
-# 📞 اطلاعات تماس شما (اینها رو عوض کن)
+# 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
 INSTAGRAM_ID = "m_gh.tech"
 
@@ -44,7 +44,7 @@ def get_inline_buttons():
 # 🎯 انتخاب متن بر اساس ساعت روز (انگلیسی)
 def get_time_based_message():
     now = datetime.now().time()
-    weekday = datetime.now().weekday()  # 5=Saturday, 6=Sunday
+    weekday = datetime.now().weekday()
 
     if weekday in (5, 6):
         return "It's the weekend — I'll get back to you as soon as I can. 🙏"
@@ -64,6 +64,12 @@ def home():
 async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global bot_enabled, stats
     
+    # گرفتن پیام (چه عادی، چه Business)
+    message = update.message or update.business_message
+    if not message:
+        return
+    
+    # فقط چت‌های خصوصی
     if update.effective_chat.type != "private":
         return
     
@@ -84,7 +90,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if current_time - last_reply_time[user_id] < COOLDOWN:
             return
     
-    await update.message.reply_text(
+    await message.reply_text(
         get_time_based_message(),
         reply_markup=get_inline_buttons()
     )
@@ -98,10 +104,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if query.data == "urgent":
         await query.edit_message_text(
-            f"🚨 **Emergency Contact:**\n"
+            f"🚨 Emergency Contact:\n"
             f"📞 Phone: {PHONE_NUMBER}\n\n"
-            f"Please call if it's urgent.",
-            parse_mode="Markdown"
+            f"Please call if it's urgent."
         )
 
 # 🔐 بررسی ادمین
@@ -116,7 +121,7 @@ async def cmd_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_admin(update):
         return
     await update.message.reply_text(
-        f"📊 **Bot Stats:**\n"
+        f"📊 Bot Stats:\n"
         f"Messages received: {stats['messages']}\n"
         f"Auto-replies sent: {stats['replies']}\n"
         f"Active users: {len(stats['users'])}"
@@ -128,7 +133,7 @@ async def cmd_off(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_admin(update):
         return
     bot_enabled = False
-    await update.message.reply_text("🔴 Bot turned OFF. Auto-replies are disabled.")
+    await update.message.reply_text("🔴 Bot turned OFF.")
 
 # 🟢 روشن کردن ربات
 async def cmd_on(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -136,7 +141,7 @@ async def cmd_on(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_admin(update):
         return
     bot_enabled = True
-    await update.message.reply_text("🟢 Bot turned ON. Auto-replies are active.")
+    await update.message.reply_text("🟢 Bot turned ON.")
 
 # 🚫 اضافه کردن به لیست سیاه
 async def cmd_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -147,7 +152,7 @@ async def cmd_blacklist(update: Update, context: ContextTypes.DEFAULT_TYPE):
         blacklist.add(user_id)
         await update.message.reply_text(f"✅ User {user_id} added to blacklist.")
     else:
-        await update.message.reply_text("Usage: `/blacklist [user_id]`")
+        await update.message.reply_text("Usage: /blacklist [user_id]")
 
 # 📅 گزارش روزانه
 async def daily_report(context: ContextTypes.DEFAULT_TYPE):
@@ -156,7 +161,7 @@ async def daily_report(context: ContextTypes.DEFAULT_TYPE):
         try:
             await context.bot.send_message(
                 chat_id=ADMIN_ID,
-                text=f"📈 **Daily Report:**\n"
+                text=f"📈 Daily Report:\n"
                      f"Messages received: {stats['messages']}\n"
                      f"Auto-replies sent: {stats['replies']}\n"
                      f"Active users: {len(stats['users'])}"
@@ -175,13 +180,19 @@ if __name__ == '__main__':
     
     application = ApplicationBuilder().token(BOT_TOKEN).build()
     
+    # دستورات ادمین
     application.add_handler(CommandHandler("stats", cmd_stats))
     application.add_handler(CommandHandler("off", cmd_off))
     application.add_handler(CommandHandler("on", cmd_on))
     application.add_handler(CommandHandler("blacklist", cmd_blacklist))
+    
+    # دکمه‌ها
     application.add_handler(CallbackQueryHandler(button_handler))
+    
+    # پیام‌های عادی و Business
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
     
+    # گزارش روزانه ساعت ۲۱:۰۰
     application.job_queue.run_daily(daily_report, time=dt_time(21, 0))
     
     print("Bot is running...")
