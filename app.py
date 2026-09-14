@@ -54,7 +54,10 @@ BOOKING_NAME, BOOKING_DATE, BOOKING_TIME = range(3)
 # 🌍 تاریخ امروز ایران به شمسی
 def get_iran_today():
     now_iran = datetime.now(IRAN_TZ)
-    return JalaliDate(now_iran.date())
+    # تبدیل میلادی به شمسی
+    jalali = JalaliDate(now_iran.date())
+    # تصحیح ۳ روز خطا
+    return jalali - timedelta(days=3)
 
 # 🎨 دکمه‌های شیشه‌ای
 def get_inline_buttons():
