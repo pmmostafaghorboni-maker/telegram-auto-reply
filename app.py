@@ -25,7 +25,7 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 10 # 24 hours
+COOLDOWN = 24 * 60 * 60  # 24 hours
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
@@ -51,12 +51,10 @@ stats = {"messages": 0, "replies": 0, "users": set()}
 # 🎯 مراحل رزرو وقت
 BOOKING_NAME, BOOKING_DATE, BOOKING_TIME = range(3)
 
-# 🌍 تاریخ امروز ایران به شمسی
+# 🌍 تاریخ امروز ایران به شمسی (با تصحیح ۳ روز خطا)
 def get_iran_today():
     now_iran = datetime.now(IRAN_TZ)
-    # تبدیل میلادی به شمسی
     jalali = JalaliDate(now_iran.date())
-    # تصحیح ۳ روز خطا
     return jalali - timedelta(days=3)
 
 # 🎨 دکمه‌های شیشه‌ای
@@ -64,7 +62,7 @@ def get_inline_buttons():
     keyboard = [
         [
             InlineKeyboardButton("📞 Emergency Contact", callback_data="urgent"),
-            InlineKeyboardButton("📱 Instagram", url=f"https://instagram.com/{INSTAGRAM_ID}"),
+            InlineKeyboardButton("📱 Instagram", callback_data="instagram"),
         ],
         [
             InlineKeyboardButton("📅 Book Appointment", callback_data="book"),
@@ -76,15 +74,15 @@ def get_inline_buttons():
 def get_time_based_message():
     now = datetime.now(IRAN_TZ).time()
     today = get_iran_today()
-    weekday = today.weekday()
+    weekday = today.weekday()  # 0=شنبه ... 5=پنجشنبه, 6=جمعه
 
-    if weekday in (5, 6):
+    if weekday in (5, 6):  # پنجشنبه و جمعه
         return "It's the weekend — I'll get back to you as soon as I can. ✨"
-    elif now >= dt_time(0, 0) and now < dt_time(12, 0):
+    elif now >= dt_time(6, 0) and now < dt_time(12, 0):  # صبح: ۶ تا ۱۲
         return "Good morning! I'm not available right now, but I'll reply as soon as I see your message. ☀️"
-    elif now >= dt_time(12, 0) and now < dt_time(20, 0):
+    elif now >= dt_time(12, 0) and now < dt_time(20, 30):  # عصر: ۱۲ تا ۲۰:۳۰
         return AUTO_REPLY_TEXT
-    else:
+    else:  # شب: ۲۰:۳۰ تا ۶ صبح
         return "Good night! I'm asleep right now — I'll get back to you tomorrow. 🌙"
 
 @app.route('/')
@@ -161,16 +159,33 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     last_reply_time[user_id] = current_time
     stats["replies"] += 1
 
-# 🖱️ مدیریت دکمه‌های Emergency و Instagram
+# 🖱️ مدیریت دکمه‌ها
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
     if query.data == "urgent":
+        keyboard = [[InlineKeyboardButton("🔙 Back", callback_data="back_to_main")]]
         await query.edit_message_text(
             f"🚨 Emergency Contact:\n"
             f"📞 Phone: {PHONE_NUMBER}\n\n"
-            f"Please call if it's urgent."
+            f"Please call if it's urgent.",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+    elif query.data == "instagram":
+        keyboard = [
+            [InlineKeyboardButton("📱 Open Instagram", url=f"https://instagram.com/{INSTAGRAM_ID}")],
+            [InlineKeyboardButton("🔙 Back", callback_data="back_to_main")]
+        ]
+        await query.edit_message_text(
+            f"📱 My Instagram:\n\n@{INSTAGRAM_ID}\n\n"
+            f"Tap the button below to open my profile.",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+    elif query.data == "back_to_main":
+        await query.edit_message_text(
+            get_time_based_message(),
+            reply_markup=get_inline_buttons()
         )
 
 # 📅 ساخت تقویم ۵ روزه شمسی (از امروز ایران)
@@ -421,7 +436,7 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler("blacklist", cmd_blacklist))
     application.add_handler(CommandHandler("cooldown", cmd_cooldown))
 
-    # ⚠️ اول ConversationHandler (رزرو) - مهم: قبل از button_handler
+    # ⚠️ اول ConversationHandler (رزرو)
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(start_booking, pattern="^book$")],
         states={
@@ -444,7 +459,7 @@ if __name__ == '__main__':
     )
     application.add_handler(conv_handler)
 
-    # ⚠️ بعد هندلر عمومی (Emergency + Instagram)
+    # ⚠️ بعد هندلر عمومی (Emergency + Instagram + Back)
     application.add_handler(CallbackQueryHandler(button_handler))
 
     # پیام‌های عادی
