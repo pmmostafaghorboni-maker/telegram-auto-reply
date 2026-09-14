@@ -25,7 +25,7 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 2  # 24 hours
+COOLDOWN = 24 * 60 * 60  # 24 hours
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
@@ -49,7 +49,7 @@ bot_enabled = True
 stats = {"messages": 0, "replies": 0, "users": set()}
 
 # 🎯 مراحل رزرو وقت
-BOOKING_NAME, BOOKING_DATE, BOOKING_TIME = range(3)
+BOOKING_NAME, BOOKING_DATE, BOOKING_TIME, BOOKING_CONFIRM = range(4)
 
 # 🌍 تاریخ امروز ایران به شمسی (با تصحیح ۳ روز خطا)
 def get_iran_today():
@@ -57,7 +57,7 @@ def get_iran_today():
     jalali = JalaliDate(now_iran.date())
     return jalali - timedelta(days=3)
 
-# 🎨 دکمه‌های شیشه‌ای
+# 🎨 دکمه‌های شیشه‌ای اصلی
 def get_inline_buttons():
     keyboard = [
         [
@@ -159,7 +159,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     last_reply_time[user_id] = current_time
     stats["replies"] += 1
 
-# 🖱️ مدیریت دکمه‌ها
+# 🖱️ مدیریت دکمه‌های Emergency و Instagram
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -226,7 +226,7 @@ def get_time_keyboard():
     ])
     return InlineKeyboardMarkup(keyboard)
 
-# 📅 شروع رزرو - تایید اسم
+# 📅 شروع رزرو - تایید اسم (با دکمه Back)
 async def start_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -234,7 +234,10 @@ async def start_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['booking_name'] = user_name
     keyboard = [
         [InlineKeyboardButton("✅ Yes, that's me", callback_data="confirm_name")],
-        [InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking")]
+        [
+            InlineKeyboardButton("🔙 Back", callback_data="back_to_main"),
+            InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking"),
+        ]
     ]
     await query.edit_message_text(
         f"📝 Is this your name?\n\n👤 {user_name}",
@@ -269,7 +272,7 @@ async def select_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_TIME
 
-# ⏰ انتخاب ساعت -> تایید نهایی
+# ⏰ انتخاب ساعت -> نمایش صفحه تایید نهایی
 async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -278,6 +281,32 @@ async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     name = context.user_data.get('booking_name')
     date = context.user_data.get('booking_date')
+
+    keyboard = [
+        [InlineKeyboardButton("✅ Confirm", callback_data="confirm_booking")],
+        [
+            InlineKeyboardButton("🔙 Back", callback_data="back_to_time"),
+            InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking"),
+        ]
+    ]
+    await query.edit_message_text(
+        f"📋 Please review your booking:\n\n"
+        f"👤 Name: {name}\n"
+        f"📅 Date: {date}\n"
+        f"⏰ Time: {time_val}\n\n"
+        f"Tap ✅ Confirm to submit.",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+    return BOOKING_CONFIRM
+
+# ✅ تایید نهایی
+async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    name = context.user_data.get('booking_name')
+    date = context.user_data.get('booking_date')
+    time_val = context.user_data.get('booking_time')
 
     await query.edit_message_text(
         f"✅ Booking confirmed!\n\n"
@@ -302,6 +331,16 @@ async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     return ConversationHandler.END
 
+# 🔙 بازگشت به صفحه اصلی (پیام خودکار)
+async def back_to_main_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    await query.edit_message_text(
+        get_time_based_message(),
+        reply_markup=get_inline_buttons()
+    )
+    return ConversationHandler.END
+
 # 🔙 بازگشت به مرحله تایید اسم
 async def back_to_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -309,7 +348,10 @@ async def back_to_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = context.user_data.get('booking_name', query.from_user.full_name)
     keyboard = [
         [InlineKeyboardButton("✅ Yes, that's me", callback_data="confirm_name")],
-        [InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking")]
+        [
+            InlineKeyboardButton("🔙 Back", callback_data="back_to_main"),
+            InlineKeyboardButton("❌ Cancel", callback_data="cancel_booking"),
+        ]
     ]
     await query.edit_message_text(
         f"📝 Is this your name?\n\n👤 {user_name}",
@@ -329,6 +371,19 @@ async def back_to_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=get_date_keyboard()
     )
     return BOOKING_DATE
+
+# 🔙 بازگشت به مرحله انتخاب ساعت
+async def back_to_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    date = context.user_data.get('booking_date', '')
+    await query.edit_message_text(
+        f"⏰ Please select a time:\n\n"
+        f"👤 Name: {context.user_data['booking_name']}\n"
+        f"📅 Date: {date}",
+        reply_markup=get_time_keyboard()
+    )
+    return BOOKING_TIME
 
 # ❌ انصراف
 async def cancel_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -442,6 +497,7 @@ if __name__ == '__main__':
         states={
             BOOKING_NAME: [
                 CallbackQueryHandler(confirm_name, pattern="^confirm_name$"),
+                CallbackQueryHandler(back_to_main_booking, pattern="^back_to_main$"),
                 CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$"),
             ],
             BOOKING_DATE: [
@@ -452,6 +508,11 @@ if __name__ == '__main__':
             BOOKING_TIME: [
                 CallbackQueryHandler(select_time, pattern="^time_"),
                 CallbackQueryHandler(back_to_date, pattern="^back_to_date$"),
+                CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$"),
+            ],
+            BOOKING_CONFIRM: [
+                CallbackQueryHandler(confirm_booking, pattern="^confirm_booking$"),
+                CallbackQueryHandler(back_to_time, pattern="^back_to_time$"),
                 CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$"),
             ],
         },
