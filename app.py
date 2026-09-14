@@ -25,7 +25,7 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 1  # 24 hours
+COOLDOWN = 10 # 24 hours
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
@@ -55,10 +55,6 @@ BOOKING_NAME, BOOKING_DATE, BOOKING_TIME = range(3)
 def get_iran_today():
     now_iran = datetime.now(IRAN_TZ)
     return JalaliDate(now_iran.date())
-
-# 🕐 ساعت فعلی ایران
-def get_iran_time():
-    return datetime.now(IRAN_TZ).strftime("%H:%M:%S")
 
 # 🎨 دکمه‌های شیشه‌ای
 def get_inline_buttons():
@@ -162,7 +158,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     last_reply_time[user_id] = current_time
     stats["replies"] += 1
 
-# 🖱️ مدیریت دکمه‌ها
+# 🖱️ مدیریت دکمه‌های Emergency و Instagram
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -212,7 +208,7 @@ def get_time_keyboard():
     ])
     return InlineKeyboardMarkup(keyboard)
 
-# 📅 شروع رزرو
+# 📅 شروع رزرو - تایید اسم
 async def start_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -241,18 +237,16 @@ async def confirm_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return BOOKING_DATE
 
-# 📅 انتخاب تاریخ -> نمایش ساعت با تاریخ و ساعت فعلی
+# 📅 انتخاب تاریخ -> نمایش ساعت
 async def select_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     date = query.data.replace("date_", "")
     context.user_data['booking_date'] = date
-    current_time = get_iran_time()
     await query.edit_message_text(
         f"⏰ Please select a time:\n\n"
         f"👤 Name: {context.user_data['booking_name']}\n"
-        f"📅 Date: {date}\n"
-        f"🕐 Current Time: {current_time}",
+        f"📅 Date: {date}",
         reply_markup=get_time_keyboard()
     )
     return BOOKING_TIME
@@ -424,7 +418,7 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler("blacklist", cmd_blacklist))
     application.add_handler(CommandHandler("cooldown", cmd_cooldown))
 
-    # هندلر مکالمه رزرو
+    # ⚠️ اول ConversationHandler (رزرو) - مهم: قبل از button_handler
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(start_booking, pattern="^book$")],
         states={
@@ -447,7 +441,7 @@ if __name__ == '__main__':
     )
     application.add_handler(conv_handler)
 
-    # دکمه‌ها (Emergency + Instagram)
+    # ⚠️ بعد هندلر عمومی (Emergency + Instagram)
     application.add_handler(CallbackQueryHandler(button_handler))
 
     # پیام‌های عادی
