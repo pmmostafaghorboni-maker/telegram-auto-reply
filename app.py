@@ -15,7 +15,7 @@ from telegram.ext import (
 
 # ⚙️ تنظیمات اصلی
 BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-ADMIN_ID = os.environ.get("ADMIN_ID")
+ADMIN_ID = 6600182795
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
 COOLDOWN = 24 * 60 * 60 # 24 hours
 
