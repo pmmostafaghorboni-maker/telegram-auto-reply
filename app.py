@@ -2,6 +2,7 @@ import os
 import time
 import threading
 from datetime import datetime, time as dt_time
+import jdatetime
 from flask import Flask
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
@@ -17,7 +18,7 @@ from telegram.ext import (
 # ⚙️ تنظیمات اصلی
 BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")  # ⚠️ در Render تنظیم کن
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
 COOLDOWN = 24 * 60 * 60  # 24 hours
 
@@ -25,7 +26,7 @@ COOLDOWN = 24 * 60 * 60  # 24 hours
 PHONE_NUMBER = "+989058407880"
 INSTAGRAM_ID = "m_gh.tech"
 
-# 🤖 تنظیم Gemini AI (اگه کلید باشه)
+# 🤖 تنظیم Gemini AI
 client = None
 if GEMINI_API_KEY:
     try:
@@ -58,10 +59,11 @@ def get_inline_buttons():
     ]
     return InlineKeyboardMarkup(keyboard)
 
-# 🎯 انتخاب متن بر اساس ساعت روز
+# 🎯 انتخاب متن بر اساس ساعت روز (با تاریخ شمسی)
 def get_time_based_message():
     now = datetime.now().time()
-    weekday = datetime.now().weekday()
+    today = jdatetime.date.today()
+    weekday = today.weekday()  # 5=جمعه، 6=شنبه
 
     if weekday in (5, 6):
         return "It's the weekend — I'll get back to you as soon as I can. ✨"
@@ -72,13 +74,21 @@ def get_time_based_message():
     else:
         return "Good night! I'm asleep right now — I'll get back to you tomorrow. 🌙"
 
-# 🤖 پاسخ هوشمند AI (فقط برای پیام‌های احساسی و خداحافظی)
+@app.route('/')
+@app.route('/health')
+def home():
+    return "Bot is running"
+
+# 🤖 پاسخ هوشمند AI
 async def get_ai_reply(user_message: str):
     if not client:
         return None
     try:
+        today = jdatetime.date.today().strftime("%Y/%m/%d")
         prompt = f"""
 You are an auto-reply assistant for a person who is currently unavailable.
+Today's date (Shamsi): {today}
+
 Analyze the user's message below.
 
 - If the message is an EMOTIONAL message (like "I miss you", "I love you", "دلم برات تنگ شده", "دوستت دارم") OR a FAREWELL message (like "goodbye", "خداحافظ", "bye", "فعلاً", "بای"), generate a SHORT, warm auto-reply in the SAME language as the message.
@@ -98,11 +108,6 @@ Your reply (only the reply text, nothing else):"""
     except Exception as e:
         print(f"AI Error: {e}")
         return None
-
-@app.route('/')
-@app.route('/health')
-def home():
-    return "Bot is running"
 
 # 📨 پاسخ خودکار
 async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -133,10 +138,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if current_time - last_reply_time[user_id] < COOLDOWN:
             return
 
-    # 🤖 اول از AI می‌پرسیم که آیا پیام احساسی یا خداحافظی هست
     ai_reply = await get_ai_reply(user_message)
-
-    # اگه AI پاسخ داد، از همون استفاده می‌کنیم. وگرنه پاسخ معمولی
     reply_text = ai_reply if ai_reply else get_time_based_message()
 
     await message.reply_text(
@@ -167,7 +169,7 @@ async def start_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def booking_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['booking_name'] = update.message.text
-    await update.message.reply_text("📅 What date works for you? (e.g., 2026-09-20)")
+    await update.message.reply_text("📅 What date works for you? (e.g., 1404/07/01)")
     return BOOKING_DATE
 
 async def booking_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -220,8 +222,9 @@ async def check_admin(update: Update) -> bool:
 async def cmd_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not await check_admin(update):
         return
+    today = jdatetime.date.today().strftime("%Y/%m/%d")
     await update.message.reply_text(
-        f"📊 Bot Stats:\n"
+        f"📊 Bot Stats — {today}\n"
         f"Messages received: {stats['messages']}\n"
         f"Auto-replies sent: {stats['replies']}\n"
         f"Active users: {len(stats['users'])}"
@@ -273,14 +276,15 @@ async def cmd_cooldown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except ValueError:
         await update.message.reply_text("⛔ Invalid number. Example: /cooldown 2")
 
-# 📅 گزارش روزانه
+# 📅 گزارش روزانه (با تاریخ شمسی)
 async def daily_report(context: ContextTypes.DEFAULT_TYPE):
     global stats
     if ADMIN_ID:
         try:
+            today = jdatetime.date.today().strftime("%Y/%m/%d")
             await context.bot.send_message(
                 chat_id=ADMIN_ID,
-                text=f"📈 Daily Report:\n"
+                text=f"📈 Daily Report — {today}\n"
                      f"Messages received: {stats['messages']}\n"
                      f"Auto-replies sent: {stats['replies']}\n"
                      f"Active users: {len(stats['users'])}"
@@ -306,7 +310,7 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler("blacklist", cmd_blacklist))
     application.add_handler(CommandHandler("cooldown", cmd_cooldown))
 
-    # هندلر مکالمه رزرو (باید قبل از CallbackQueryHandler عمومی باشه)
+    # هندلر مکالمه رزرو
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(start_booking, pattern="^book$")],
         states={
@@ -318,10 +322,10 @@ if __name__ == '__main__':
     )
     application.add_handler(conv_handler)
 
-    # دکمه‌ها (بعد از ConversationHandler)
+    # دکمه‌ها
     application.add_handler(CallbackQueryHandler(button_handler))
 
-    # پیام‌های عادی و Business
+    # پیام‌های عادی
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
 
     # گزارش روزانه ساعت ۲۱:۰۰
