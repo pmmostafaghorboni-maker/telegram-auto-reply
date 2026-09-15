@@ -306,8 +306,7 @@ async def play_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
             audio=song["url"],
             title=song["title"],
             performer=song["performer"],
-            caption="🎵 Enjoy!
-            This message will be deleted in 5 minutes."
+            caption="🎵 Enjoy!\nThis message will be deleted in 5 minutes."
         )
 
         job_name = f"delete_{sent_message.message_id}"
