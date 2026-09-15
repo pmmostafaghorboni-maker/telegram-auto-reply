@@ -2,6 +2,7 @@ import os
 import time
 import random
 import threading
+import logging
 from datetime import datetime, time as dt_time, timedelta
 from zoneinfo import ZoneInfo
 
@@ -21,6 +22,13 @@ from telegram.ext import (
     ContextTypes,
 )
 
+# 📋 لاگ‌گذاری
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
 # ⚙️ تنظیمات اصلی
 BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
@@ -32,63 +40,30 @@ COOLDOWN = 1 #24 * 60 * 60  # 24 hours
 PHONE_NUMBER = "+989058407880"
 INSTAGRAM_ID = "m_gh.tech"
 
-# 🎵 لیست آهنگ‌ها (تصادفی انتخاب می‌شن) - Google Drive
+# 🎵 لیست آهنگ‌ها - Google Drive
 SONGS = [
-    {
-        "title": "Maste Eshgh",
-        "performer": "Alireza Talischi",
-        "url": "https://drive.google.com/uc?export=download&id=1phRFMcaF5hwK8VUd3g0c_ZC9eipKweI6",
-    },
-    {
-        "title": "Persian Song 1",
-        "performer": "Various Artists",
-        "url": "https://drive.google.com/uc?export=download&id=1yY81IMw970z_tCFIgQB6qTYISe83hNZ1",
-    },
-    {
-        "title": "Persian Song 2",
-        "performer": "Various Artists",
-        "url": "https://drive.google.com/uc?export=download&id=1Bb_y5mAzdQJojp6Yd08qxJwFkA2Nostz",
-    },
-    {
-        "title": "Mehdi Ahmadvand",
-        "performer": "Mehdi Ahmadvand",
-        "url": "https://drive.google.com/uc?export=download&id=1OUS-RZ-x94CKVuBcbr21nfnLvhAJX7lM",
-    },
-    {
-        "title": "Farhad",
-        "performer": "Mehdi Ahmadvand",
-        "url": "https://drive.google.com/uc?export=download&id=1vrUy4Yho8wK0Kuq9YKnNVzDgq6yqj6Qk",
-    },
-    {
-        "title": "Jonoon",
-        "performer": "Mehdi Ahmadvand",
-        "url": "https://drive.google.com/uc?export=download&id=1lcC8A9dIFqziY9arhVz6O9NTDjSgL3K0",
-    },
-    {
-        "title": "Podcast 3",
-        "performer": "Mehdi Ahmadvand",
-        "url": "https://drive.google.com/uc?export=download&id=1yW4EClNb-TL0akEzM7brJs8bPSxyFlC6",
-    },
-    {
-        "title": "Remix Zang Bezani",
-        "performer": "Mehdi Ahmadvand",
-        "url": "https://drive.google.com/uc?export=download&id=1jGjGWf1fR1UCmY8Di9mWj2wPGxsD-3NM",
-    },
-    {
-        "title": "Zang Bezani",
-        "performer": "Mehdi Ahmadvand",
-        "url": "https://drive.google.com/uc?export=download&id=1AC3PUo1lp-roqBmAQMUfGYwQoBgFPwGK",
-    },
-    {
-        "title": "Faghat Ba to Eshgham",
-        "performer": "Shadmehr Aghili",
-        "url": "https://drive.google.com/uc?export=download&id=1vivihQm4iU4ZRBo0OKo9wJdmctpQqOzI",
-    },
-    {
-        "title": "Elaheye Naz",
-        "performer": "Mehdi Ahmadvand",
-        "url": "https://drive.google.com/uc?export=download&id=18DIw4quX12SkX_OJDyL926M77WhDkkor",
-    },
+    {"title": "Maste Eshgh", "performer": "Alireza Talischi",
+     "url": "https://drive.google.com/uc?export=download&id=1phRFMcaF5hwK8VUd3g0c_ZC9eipKweI6"},
+    {"title": "Persian Song 1", "performer": "Various Artists",
+     "url": "https://drive.google.com/uc?export=download&id=1yY81IMw970z_tCFIgQB6qTYISe83hNZ1"},
+    {"title": "Persian Song 2", "performer": "Various Artists",
+     "url": "https://drive.google.com/uc?export=download&id=1Bb_y5mAzdQJojp6Yd08qxJwFkA2Nostz"},
+    {"title": "Mehdi Ahmadvand", "performer": "Mehdi Ahmadvand",
+     "url": "https://drive.google.com/uc?export=download&id=1OUS-RZ-x94CKVuBcbr21nfnLvhAJX7lM"},
+    {"title": "Farhad", "performer": "Mehdi Ahmadvand",
+     "url": "https://drive.google.com/uc?export=download&id=1vrUy4Yho8wK0Kuq9YKnNVzDgq6yqj6Qk"},
+    {"title": "Jonoon", "performer": "Mehdi Ahmadvand",
+     "url": "https://drive.google.com/uc?export=download&id=1lcC8A9dIFqziY9arhVz6O9NTDjSgL3K0"},
+    {"title": "Podcast 3", "performer": "Mehdi Ahmadvand",
+     "url": "https://drive.google.com/uc?export=download&id=1yW4EClNb-TL0akEzM7brJs8bPSxyFlC6"},
+    {"title": "Remix Zang Bezani", "performer": "Mehdi Ahmadvand",
+     "url": "https://drive.google.com/uc?export=download&id=1jGjGWf1fR1UCmY8Di9mWj2wPGxsD-3NM"},
+    {"title": "Zang Bezani", "performer": "Mehdi Ahmadvand",
+     "url": "https://drive.google.com/uc?export=download&id=1AC3PUo1lp-roqBmAQMUfGYwQoBgFPwGK"},
+    {"title": "Faghat Ba to Eshgham", "performer": "Shadmehr Aghili",
+     "url": "https://drive.google.com/uc?export=download&id=1vivihQm4iU4ZRBo0OKo9wJdmctpQqOzI"},
+    {"title": "Elaheye Naz", "performer": "Mehdi Ahmadvand",
+     "url": "https://drive.google.com/uc?export=download&id=18DIw4quX12SkX_OJDyL926M77WhDkkor"},
 ]
 
 # 🗣️ کلمات کلیدی و پاسخ‌های خودکار
@@ -157,7 +132,7 @@ if GEMINI_API_KEY:
         from google import genai
         client = genai.Client(api_key=GEMINI_API_KEY)
     except Exception as e:
-        print(f"Gemini setup failed: {e}")
+        logger.error(f"Gemini setup failed: {e}")
 
 app = Flask(__name__)
 
@@ -176,7 +151,7 @@ def get_iran_today():
     now_iran = datetime.now(IRAN_TZ)
     return JalaliDate(now_iran.date())
 
-# 🔍 پیدا کردن پاسخ مناسب از روی کلمات کلیدی
+# 🔍 پیدا کردن پاسخ مناسب
 def get_keyword_reply(user_message: str):
     msg_lower = user_message.lower()
     for keyword, replies in KEYWORD_REPLIES.items():
@@ -184,23 +159,19 @@ def get_keyword_reply(user_message: str):
             return random.choice(replies)
     return None
 
-# 🎨 دکمه‌های شیشه‌ای اصلی
+# 🎨 دکمه‌های اصلی
 def get_inline_buttons():
     keyboard = [
         [
             InlineKeyboardButton("📞 Emergency Contact", callback_data="urgent"),
             InlineKeyboardButton("📱 Instagram", callback_data="instagram"),
         ],
-        [
-            InlineKeyboardButton("📅 Book Appointment", callback_data="book"),
-        ],
-        [
-            InlineKeyboardButton("🎵 Play Music", callback_data="play_music"),
-        ]
+        [InlineKeyboardButton("📅 Book Appointment", callback_data="book")],
+        [InlineKeyboardButton("🎵 Play Music", callback_data="play_music")],
     ]
     return InlineKeyboardMarkup(keyboard)
 
-# 🎯 انتخاب متن بر اساس ساعت روز
+# 🎯 متن بر اساس ساعت
 def get_time_based_message():
     now = datetime.now(IRAN_TZ)
     time_now = now.time()
@@ -208,9 +179,9 @@ def get_time_based_message():
 
     if weekday in (3, 4):
         return "It's the weekend — I'll get back to you as soon as I can. ✨"
-    elif time_now >= dt_time(6, 0) and time_now < dt_time(12, 0):
+    elif dt_time(6, 0) <= time_now < dt_time(12, 0):
         return "Good morning! I'm not available right now, but I'll reply as soon as I see your message. ☀️"
-    elif time_now >= dt_time(12, 0) and time_now < dt_time(20, 30):
+    elif dt_time(12, 0) <= time_now < dt_time(20, 30):
         return AUTO_REPLY_TEXT
     else:
         return "Good night! I'm asleep right now — I'll get back to you tomorrow. 🌙"
@@ -220,7 +191,7 @@ def get_time_based_message():
 def home():
     return "Bot is running"
 
-# 🤖 پاسخ هوشمند AI
+# 🤖 پاسخ AI
 async def get_ai_reply(user_message: str):
     if not client:
         return None
@@ -247,7 +218,7 @@ Your reply (only the reply text, nothing else):"""
             return None
         return reply
     except Exception as e:
-        print(f"AI Error: {e}")
+        logger.error(f"AI Error: {e}")
         return None
 
 # 📨 پاسخ خودکار
@@ -276,7 +247,6 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     keyword_reply = get_keyword_reply(user_message)
-
     if keyword_reply:
         await message.reply_text(keyword_reply)
         return
@@ -287,20 +257,47 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     ai_reply = await get_ai_reply(user_message)
     reply_text = ai_reply if ai_reply else get_time_based_message()
-    await message.reply_text(
+    sent_message = await message.reply_text(
         reply_text,
         reply_markup=get_inline_buttons()
     )
 
+    # 🗑️ حذف خودکار پیام اصلی بعد از ۵ دقیقه
+    job_name = f"autodelete_{sent_message.message_id}"
+    context.job_queue.run_once(
+        auto_delete_main_message,
+        when=10,
+        data={
+            "chat_id": sent_message.chat_id,
+            "message_id": sent_message.message_id,
+        },
+        name=job_name
+    )
+    logger.info(f"✅ Scheduled auto-delete for main message {sent_message.message_id} (job: {job_name})")
+
     last_reply_time[user_id] = current_time
     stats["replies"] += 1
 
-# 🎵 پخش آهنگ تصادفی
+# 🗑️ حذف خودکار پیام اصلی
+async def auto_delete_main_message(context: ContextTypes.DEFAULT_TYPE):
+    job = context.job
+    logger.info(f"🔔 AUTO-DELETE JOB FIRED for message {job.data['message_id']}")
+    try:
+        await context.bot.delete_message(
+            chat_id=job.data["chat_id"],
+            message_id=job.data["message_id"]
+        )
+        logger.info(f"✅ Auto-deleted main message {job.data['message_id']}")
+    except Exception as e:
+        logger.error(f"❌ Error auto-deleting main message: {e}")
+
+# 🎵 پخش آهنگ
 async def play_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
     song = random.choice(SONGS)
+    logger.info(f"🎵 Sending song: {song['title']}")
 
     try:
         sent_message = await context.bot.send_audio(
@@ -311,55 +308,70 @@ async def play_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
             caption="🎵 Enjoy! This message will be deleted in 5 minutes."
         )
 
-        # ⏰ زمان‌بندی برای پاک کردن پیام بعد از ۵ دقیقه
+        job_name = f"delete_{sent_message.message_id}"
         context.job_queue.run_once(
             delete_message_job,
-            when=300,  # ۵ دقیقه = ۳۰۰ ثانیه
+            when=300,
             data={
                 "chat_id": sent_message.chat_id,
                 "message_id": sent_message.message_id,
             },
-            name=f"delete_{sent_message.message_id}"
+            name=job_name
         )
+        logger.info(f"✅ Scheduled delete for song message {sent_message.message_id} (job: {job_name})")
 
         await query.answer("🎵 Sent! Enjoy.", show_alert=False)
     except Exception as e:
-        print(f"Error sending audio: {e}")
+        logger.error(f"❌ Error sending audio: {e}")
         await query.answer("❌ Couldn't send. Try again.", show_alert=True)
 
-# 🗑️ تابع پاک کردن پیام آهنگ
+# 🗑️ حذف پیام آهنگ
 async def delete_message_job(context: ContextTypes.DEFAULT_TYPE):
     job = context.job
+    logger.info(f"🔔 SONG DELETE JOB FIRED for message {job.data['message_id']}")
     try:
         await context.bot.delete_message(
             chat_id=job.data["chat_id"],
             message_id=job.data["message_id"]
         )
-        print(f"Deleted message {job.data['message_id']}")
+        logger.info(f"✅ Deleted song message {job.data['message_id']}")
     except Exception as e:
-        print(f"Error deleting message: {e}")
+        logger.error(f"❌ Error deleting song message: {e}")
+
+# 🧹 لغو job حذف خودکار
+def cancel_auto_delete(context: ContextTypes.DEFAULT_TYPE, message_id: int):
+    job_name = f"autodelete_{message_id}"
+    jobs = context.job_queue.get_jobs_by_name(job_name)
+    for job in jobs:
+        job.schedule_removal()
+        logger.info(f"🚫 Cancelled auto-delete for message {message_id}")
 
 # 🖱️ مدیریت دکمه‌ها
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if query.data == "play_music":
+        cancel_auto_delete(context, query.message.message_id)
+        await play_music(update, context)
+        return
+
     await query.answer()
 
     if query.data == "urgent":
+        cancel_auto_delete(context, query.message.message_id)
         keyboard = [[InlineKeyboardButton("🔙 Back", callback_data="back_to_main")]]
         await query.edit_message_text(
-            f"🚨 Emergency Contact:\n"
-            f"📞 Phone: {PHONE_NUMBER}\n\n"
-            f"Please call if it's urgent.",
+            f"🚨 Emergency Contact:\n📞 Phone: {PHONE_NUMBER}\n\nPlease call if it's urgent.",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
     elif query.data == "instagram":
+        cancel_auto_delete(context, query.message.message_id)
         keyboard = [
             [InlineKeyboardButton("📱 Open Instagram", url=f"https://instagram.com/{INSTAGRAM_ID}")],
             [InlineKeyboardButton("🔙 Back", callback_data="back_to_main")]
         ]
         await query.edit_message_text(
-            f"📱 My Instagram:\n\n@{INSTAGRAM_ID}\n\n"
-            f"Tap the button below to open my profile.",
+            f"📱 My Instagram:\n\n@{INSTAGRAM_ID}\n\nTap the button below to open my profile.",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
     elif query.data == "back_to_main":
@@ -367,15 +379,23 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             get_time_based_message(),
             reply_markup=get_inline_buttons()
         )
-    elif query.data == "play_music":
-        await play_music(update, context)
+        # دوباره حذف خودکار
+        context.job_queue.run_once(
+            auto_delete_main_message,
+            when=10,
+            data={
+                "chat_id": query.message.chat_id,
+                "message_id": query.message.message_id,
+            },
+            name=f"autodelete_{query.message.message_id}"
+        )
 
-# 📅 ساخت تقویم ۵ روزه
+# 📅 تقویم ۵ روزه
 def get_date_keyboard():
     today = get_iran_today()
     keyboard = []
     row = []
-    for i in range(0, 5):
+    for i in range(5):
         next_day = today + timedelta(days=i)
         date_str = next_day.strftime("%Y/%m/%d")
         row.append(InlineKeyboardButton(date_str, callback_data=f"date_{date_str}"))
@@ -390,7 +410,7 @@ def get_date_keyboard():
     ])
     return InlineKeyboardMarkup(keyboard)
 
-# ⏰ ساخت دکمه‌های ساعت (با غیرفعال کردن تایم‌های گذشته و رزروشده)
+# ⏰ دکمه‌های ساعت
 def get_time_keyboard(selected_date: str = None):
     times = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
     keyboard = []
@@ -428,6 +448,7 @@ def get_time_keyboard(selected_date: str = None):
 async def start_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+    cancel_auto_delete(context, query.message.message_id)
     user_name = query.from_user.full_name
     context.user_data['booking_name'] = user_name
     keyboard = [
@@ -448,9 +469,7 @@ async def confirm_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     today = get_iran_today().strftime("%Y/%m/%d")
     await query.edit_message_text(
-        f"📅 Please select a date:\n\n"
-        f"👤 Name: {context.user_data['booking_name']}\n"
-        f"📆 Today: {today}",
+        f"📅 Please select a date:\n\n👤 Name: {context.user_data['booking_name']}\n📆 Today: {today}",
         reply_markup=get_date_keyboard()
     )
     return BOOKING_DATE
@@ -461,9 +480,7 @@ async def select_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
     date = query.data.replace("date_", "")
     context.user_data['booking_date'] = date
     await query.edit_message_text(
-        f"⏰ Please select a time:\n\n"
-        f"👤 Name: {context.user_data['booking_name']}\n"
-        f"📅 Date: {date}",
+        f"⏰ Please select a time:\n\n👤 Name: {context.user_data['booking_name']}\n📅 Date: {date}",
         reply_markup=get_time_keyboard(date)
     )
     return BOOKING_TIME
@@ -472,11 +489,10 @@ async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
 
     if query.data == "already_booked":
-        await query.answer("⛔ This time is already booked. Please choose another.", show_alert=True)
+        await query.answer("⛔ This time is already booked.", show_alert=True)
         return BOOKING_TIME
-
     if query.data == "past_time":
-        await query.answer("⏰ This time has already passed. Please choose a future time.", show_alert=True)
+        await query.answer("⏰ This time has already passed.", show_alert=True)
         return BOOKING_TIME
 
     await query.answer()
@@ -492,11 +508,7 @@ async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
     ]
     await query.edit_message_text(
-        f"📋 Please review your booking:\n\n"
-        f"👤 Name: {name}\n"
-        f"📅 Date: {date}\n"
-        f"⏰ Time: {time_val}\n\n"
-        f"Tap ✅ Confirm to submit.",
+        f"📋 Please review your booking:\n\n👤 Name: {name}\n📅 Date: {date}\n⏰ Time: {time_val}\n\nTap ✅ Confirm to submit.",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
     return BOOKING_CONFIRM
@@ -510,8 +522,7 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if date in booked_slots and time_val in booked_slots[date]:
         await query.edit_message_text(
-            f"⛔ Sorry, this time was just booked by someone else.\n\n"
-            f"Please choose another time.",
+            f"⛔ Sorry, this time was just booked.\n\nPlease choose another time.",
             reply_markup=get_time_keyboard(date)
         )
         return BOOKING_TIME
@@ -521,17 +532,10 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     booked_slots[date].append(time_val)
 
     await query.edit_message_text(
-        f"✅ Booking confirmed!\n\n"
-        f"👤 Name: {name}\n"
-        f"📅 Date: {date}\n"
-        f"⏰ Time: {time_val}\n\n"
-        f"I'll get back to you soon. ✨"
+        f"✅ Booking confirmed!\n\n👤 Name: {name}\n📅 Date: {date}\n⏰ Time: {time_val}\n\nI'll get back to you soon. ✨"
     )
 
-    # 🎵 پیشنهاد آهنگ
-    playlist_keyboard = [
-        [InlineKeyboardButton("🎵 Play Music", callback_data="play_music")]
-    ]
+    playlist_keyboard = [[InlineKeyboardButton("🎵 Play Music", callback_data="play_music")]]
     try:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -539,30 +543,78 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(playlist_keyboard)
         )
     except Exception as e:
-        print(f"Error sending playlist: {e}")
+        logger.error(f"Error sending playlist: {e}")
 
     if ADMIN_ID:
         try:
             await context.bot.send_message(
                 chat_id=ADMIN_ID,
-                text=f"📅 New Booking Request:\n\n"
-                     f"👤 Name: {name}\n"
-                     f"📅 Date: {date}\n"
-                     f"⏰ Time: {time_val}\n"
-                     f"📱 User: @{update.effective_user.username or 'N/A'}"
+                text=f"📅 New Booking Request:\n\n👤 Name: {name}\n📅 Date: {date}\n⏰ Time: {time_val}\n📱 User: @{update.effective_user.username or 'N/A'}"
             )
         except Exception as e:
-            print(f"Error notifying admin: {e}")
+            logger.error(f"Error notifying admin: {e}")
 
+    schedule_booking_reminder(context, date, time_val, name, update.effective_chat.id)
     return ConversationHandler.END
+
+# 🔔 یادآوری ۱ ساعت قبل
+def schedule_booking_reminder(context, date_str: str, time_str: str, name: str, chat_id: int):
+    try:
+        jalali = JalaliDate.strptime(date_str, "%Y/%m/%d")
+        gregorian_date = jalali.to_gregorian()
+        hour, minute = map(int, time_str.split(":"))
+
+        booking_dt = datetime(
+            gregorian_date.year, gregorian_date.month, gregorian_date.day,
+            hour, minute, tzinfo=IRAN_TZ
+        )
+        reminder_dt = booking_dt - timedelta(hours=1)
+
+        if reminder_dt <= datetime.now(IRAN_TZ):
+            logger.info(f"⏭️ Reminder time already passed for {date_str} {time_str}")
+            return
+
+        delay_seconds = (reminder_dt - datetime.now(IRAN_TZ)).total_seconds()
+        job_name = f"reminder_{chat_id}_{date_str}_{time_str}"
+
+        context.job_queue.run_once(
+            send_booking_reminder,
+            when=delay_seconds,
+            data={"chat_id": chat_id, "name": name, "date": date_str, "time": time_str},
+            name=job_name
+        )
+        logger.info(f"✅ Reminder scheduled for {date_str} {time_str} (in {delay_seconds/60:.1f} min)")
+    except Exception as e:
+        logger.error(f"❌ Error scheduling reminder: {e}")
+
+async def send_booking_reminder(context: ContextTypes.DEFAULT_TYPE):
+    job = context.job
+    chat_id = job.data["chat_id"]
+    name = job.data["name"]
+    date = job.data["date"]
+    time_val = job.data["time"]
+
+    try:
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=f"🔔 Reminder!\n\nYour appointment is in 1 hour:\n\n👤 Name: {name}\n📅 Date: {date}\n⏰ Time: {time_val}\n\nSee you soon! ✨"
+        )
+    except Exception as e:
+        logger.error(f"Error sending reminder to user: {e}")
+
+    if ADMIN_ID:
+        try:
+            await context.bot.send_message(
+                chat_id=ADMIN_ID,
+                text=f"🔔 Booking Reminder (1 hour left):\n\n👤 Name: {name}\n📅 Date: {date}\n⏰ Time: {time_val}"
+            )
+        except Exception as e:
+            logger.error(f"Error sending reminder to admin: {e}")
 
 async def back_to_main_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    await query.edit_message_text(
-        get_time_based_message(),
-        reply_markup=get_inline_buttons()
-    )
+    await query.edit_message_text(get_time_based_message(), reply_markup=get_inline_buttons())
     return ConversationHandler.END
 
 async def back_to_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -587,9 +639,7 @@ async def back_to_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     today = get_iran_today().strftime("%Y/%m/%d")
     await query.edit_message_text(
-        f"📅 Please select a date:\n\n"
-        f"👤 Name: {context.user_data['booking_name']}\n"
-        f"📆 Today: {today}",
+        f"📅 Please select a date:\n\n👤 Name: {context.user_data['booking_name']}\n📆 Today: {today}",
         reply_markup=get_date_keyboard()
     )
     return BOOKING_DATE
@@ -599,9 +649,7 @@ async def back_to_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     date = context.user_data.get('booking_date', '')
     await query.edit_message_text(
-        f"⏰ Please select a time:\n\n"
-        f"👤 Name: {context.user_data['booking_name']}\n"
-        f"📅 Date: {date}",
+        f"⏰ Please select a time:\n\n👤 Name: {context.user_data['booking_name']}\n📅 Date: {date}",
         reply_markup=get_time_keyboard(date)
     )
     return BOOKING_TIME
@@ -612,7 +660,7 @@ async def cancel_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text("❌ Booking cancelled.")
     return ConversationHandler.END
 
-# 🔐 بررسی ادمین
+# 🔐 ادمین
 async def check_admin(update: Update) -> bool:
     if str(update.effective_user.id) != str(ADMIN_ID):
         await update.message.reply_text("⛔ Access denied.")
@@ -624,10 +672,7 @@ async def cmd_stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     today = get_iran_today().strftime("%Y/%m/%d")
     await update.message.reply_text(
-        f"📊 Bot Stats — {today}\n"
-        f"Messages received: {stats['messages']}\n"
-        f"Auto-replies sent: {stats['replies']}\n"
-        f"Active users: {len(stats['users'])}"
+        f"📊 Bot Stats — {today}\nMessages received: {stats['messages']}\nAuto-replies sent: {stats['replies']}\nActive users: {len(stats['users'])}"
     )
 
 async def cmd_off(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -690,14 +735,15 @@ async def daily_report(context: ContextTypes.DEFAULT_TYPE):
             today = get_iran_today().strftime("%Y/%m/%d")
             await context.bot.send_message(
                 chat_id=ADMIN_ID,
-                text=f"📈 Daily Report — {today}\n"
-                     f"Messages received: {stats['messages']}\n"
-                     f"Auto-replies sent: {stats['replies']}\n"
-                     f"Active users: {len(stats['users'])}"
+                text=f"📈 Daily Report — {today}\nMessages received: {stats['messages']}\nAuto-replies sent: {stats['replies']}\nActive users: {len(stats['users'])}"
             )
         except Exception as e:
-            print(f"Error sending report: {e}")
+            logger.error(f"Error sending report: {e}")
     stats = {"messages": 0, "replies": 0, "users": set()}
+
+# 🧪 تست job (فقط برای دیباگ)
+async def test_job(context: ContextTypes.DEFAULT_TYPE):
+    logger.info("🧪🧪🧪 TEST JOB EXECUTED SUCCESSFULLY! 🧪🧪🧪")
 
 def run_flask():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
@@ -743,10 +789,12 @@ if __name__ == '__main__':
     application.add_handler(conv_handler)
 
     application.add_handler(CallbackQueryHandler(button_handler))
-
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
 
     application.job_queue.run_daily(daily_report, time=dt_time(21, 0))
 
-    print("Bot is running...")
+    # 🧪 تست job - بعد از 30 ثانیه از استارت
+    application.job_queue.run_once(test_job, when=30)
+
+    logger.info("🚀 Bot is running...")
     application.run_polling()
