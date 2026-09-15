@@ -35,6 +35,7 @@ ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
 COOLDOWN = 1 #24 * 60 * 60  # 24 hours
+AUTO_DELETE_SECONDS = 10  # 🧪 تست: ۱۰ ثانیه (بعداً 300 کن)
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
@@ -266,7 +267,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     job_name = f"autodelete_{sent_message.message_id}"
     context.job_queue.run_once(
         auto_delete_main_message,
-        when=10,
+        when=AUTO_DELETE_SECONDS,
         data={
             "chat_id": sent_message.chat_id,
             "message_id": sent_message.message_id,
@@ -382,7 +383,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # دوباره حذف خودکار
         context.job_queue.run_once(
             auto_delete_main_message,
-            when=10,
+            when=AUTO_DELETE_SECONDS,
             data={
                 "chat_id": query.message.chat_id,
                 "message_id": query.message.message_id,
