@@ -32,233 +32,91 @@ COOLDOWN = 24 * 60 * 60  # 24 hours
 PHONE_NUMBER = "+989058407880"
 INSTAGRAM_ID = "m_gh.tech"
 
-# 🗣️ کلمات کلیدی و پاسخ‌های خودکار (چندگانه و متنوع)
+# 🗣️ کلمات کلیدی و پاسخ‌های خودکار (باکلاس و دوستانه)
 KEYWORD_REPLIES = {
-    # ===== تشکر (Thanks) =====
-   "thanks": [
-    "خواهش می‌کنم، کاری نکردم. 🖤",
-    "قابل شما رو نداشت. ✨",
-    "لطف دارید. 🙏",
-    "همیشه خوشحالم کمکی کرده باشم. 💫",
-],
-"thank you": [
-    "خواهش می‌کنم، کاری نکردم. 🖤",
-    "قابل شما رو نداشت. ✨",
-    "لطف دارید. 🙏",
-],
-"thx": [
-    "خواهش می‌کنم. 🖤",
-    "لطف دارید. ✨",
-],
-"tnx": [
-    "خواهش می‌کنم. 🖤",
-    "لطف دارید. ✨",
-],
-"مرسی": [
-    "خواهش می‌کنم، کاری نکردم. 🖤",
-    "قابل شما رو نداشت. ✨",
-    "لطف دارید. 🙏",
-    "همیشه خوشحالم کمکی کرده باشم. 💫",
-],
-"ممنون": [
-    "خواهش می‌کنم، کاری نکردم. 🖤",
-    "قابل شما رو نداشت. ✨",
-    "لطف دارید. 🙏",
-],
-"ممنونم": [
-    "خواهش می‌کنم. 🖤",
-    "لطف دارید. ✨",
-],
-"مرسی ازت": [
-    "خواهش می‌کنم. 🖤",
-    "لطف دارید. ✨",
-],
-    # ===== خداحافظی (Farewell) =====
-  "goodbye": [
-    "خداحافظ، مراقب خودت باش. 🌙",
-    "به امید دیدار. 🖤",
-    "دلم برات می‌مونه. ✨",
-],
-"bye": [
-    "خداحافظ. 🌙",
-    "مراقب خودت باش. 🖤",
-],
-"see you": [
-    "به امید دیدار. 🌙",
-    "منتظرتم. ✨",
-],
-"take care": [
-    "مراقب خودت باش. 🖤",
-    "به سلامت. ✨",
-],
-"خداحافظ": [
-    "خداحافظ، مراقب خودت باش. 🌙",
-    "به امید دیدار. 🖤",
-    "دلم برات می‌مونه. ✨",
-    "به سلامت. 💫",
-],
-"خدانگهدار": [
-    "خدا نگهدارت. 🌙",
-    "مراقب خودت باش. 🖤",
-],
-"بای": [
-    "خداحافظ. 🌙",
-    "مراقب خودت باش. 🖤",
-],
-"فعلاً": [
-    "فعلاً، به امید دیدار. 🌙",
-    "منتظرتم. ✨",
-],
-"خدا نگهدار": [
-    "خدا نگهدارت. 🌙",
-    "مراقب خودت باش. 🖤",
-],
-    # ===== احوال‌پرسی (Greetings) =====
-  "how are you": [
-    "ممنون که پرسیدی، خوبم. تو چطوری؟ 😊",
-    "خوبم، ممنون. تو چطوری؟ ✨",
-],
-"چطوری": [
-    "ممنون که پرسیدی، خوبم. تو چطوری؟ 😊",
-    "خوبم، ممنون. تو چطوری؟ ✨",
-],
-"خوبی": [
-    "خوبم، ممنون. تو خوبی؟ 😊",
-    "ممنون که پرسیدی. ✨",
-],
-"چه خبر": [
-    "سلامتی، ممنون. تو چه خبر؟ 😊",
-    "خبری نیست، ممنون. ✨",
-],
-    # ===== سوالات رایج (Common Questions) =====
-  "where are you": [
-    "دور از دید، اما نزدیک به دل. 🌙",
-    "نیستم، اما به یادتم. ✨",
-],
-"کجایی": [
-    "دور از دید، اما نزدیک به دل. 🌙",
-    "نیستم، اما به یادتم. ✨",
-],
-"چرا جواب نمی‌دی": [
-    "ببخشید، الان در دسترس نیستم. 🖤",
-    "شرمنده، الان نمی‌تونم. 🙏",
-],
-"کی برمی‌گردی": [
-    "زود برمی‌گردم، منتظرم باش. 🌙",
-    "به زودی پیشتم. ✨",
-],
-"are you there": [
-    "Not right now, but you're on my mind. 🌙",
-    "Away at the moment, but not forgotten. ✨",
-],
-
-    # ===== شب‌بخیر و صبح‌بخیر =====
-   "good night": [
-    "شب بخیر، خواب‌های خوش. 🌙",
-    "شب بخیر، دلم پیشته. ✨",
-],
-"good morning": [
-    "صبح بخیر، روزت قشنگ. ☀️",
-    "صبح بخیر، چه روز قشنگی. ✨",
-],
-"شب بخیر": [
-    "شب بخیر، خواب‌های خوش. 🌙",
-    "شب بخیر، دلم پیشته. ✨",
-],
-"صبح بخیر": [
-    "صبح بخیر، روزت قشنگ. ☀️",
-    "صبح بخیر، چه روز قشنگی. ✨",
-],
-
-    # ===== تبریک و مناسبتی =====
-    "happy birthday": [
-    "مرسی، چه لطفی کردی. 🎂",
-    "ممنون، دلم رو شاد کردی. ✨",
-],
-"تولدت مبارک": [
-    "مرسی، چه لطفی کردی. 🎂",
-    "ممنون، دلم رو شاد کردی. ✨",
-],
-"congrats": [
-    "مرسی. 🎉",
-    "ممنون، دلم رو شاد کردی. ✨",
-],
-"تبریک": [
-    "مرسی. 🎉",
-    "ممنون، دلم رو شاد کردی. ✨",
-],
-
-    # ===== عذرخواهی =====
-   "sorry": [
-    "مهم نیست، نگران نباش. 🖤",
-    "اشکالی نداره. ✨",
-],
-"ببخشید": [
-    "مهم نیست، نگران نباش. 🖤",
-    "اشکالی نداره. ✨",
-],
-"شرمنده": [
-    "مهم نیست. 🖤",
-    "اشکالی نداره. ✨",
-],
-    # ===== درخواست فوری =====
-   "urgent": [
-    "دریافت شد، زود خبرت می‌کنم. 🚨",
-    "باشه، زود جوابت رو می‌دم. ⚡",
-],
-"فوری": [
-    "دریافت شد، زود خبرت می‌کنم. 🚨",
-    "باشه، زود جوابت رو می‌دم. ⚡",
-],
-"اضطراری": [
-    "دریافت شد، زود خبرت می‌کنم. 🚨",
-    "باشه، زود جوابت رو می‌دم. ⚡",
-],
-"asap": [
-    "Got it, will reply soon. 🚨",
-    "Understood, talk to you soon. ⚡",
-],
-
-    # ===== تشکر ویژه =====
-    "خدا خیرت بده": [
-    "مرسی، خدا خیرت بده. 🖤",
-    "لطف داری. ✨",
-],
-"دستت درد نکنه": [
-    "سلامت باشی. 🖤",
-    "لطف داری. ✨",
-],
-     # ===== احساسی =====  
-    "i miss you": [
-    "منم دلم برات تنگ شده. 🖤",
-    "دلت در دل من جا داره. ✨",
-],
-"i love you": [
-    "منم دوستت دارم. 🖤",
-    "محبتت برام ارزشمنده. ✨",
-],
-"miss you": [
-    "منم دلم برات تنگ شده. 🖤",
-],
-"love you": [
-    "منم دوستت دارم. 🖤",
-],
-"دلم برات تنگ شده": [
-    "منم دلم برات تنگ شده. 🖤",
-    "دلت در دل من جا داره. ✨",
-],
-"دلم برات تنگ شده بود": [
-    "منم دلم برات تنگ شده بود. 🖤",
-    "دلت در دل من جا داره. ✨",
-],
-"دوستت دارم": [
-    "منم دوستت دارم. 🖤",
-    "محبتت برام ارزشمنده. ✨",
-],
-"عاشقتم": [
-    "منم عاشقتم. 🖤",
-    "محبتت برام ارزشمنده. ✨",
-],
+    "thanks": [
+        "خواهش می‌کنم، کاری نکردم. 🖤",
+        "قابل شما رو نداشت. ✨",
+        "لطف دارید. 🙏",
+    ],
+    "thank you": [
+        "خواهش می‌کنم، کاری نکردم. 🖤",
+        "قابل شما رو نداشت. ✨",
+        "لطف دارید. 🙏",
+    ],
+    "thx": ["خواهش می‌کنم. 🖤", "لطف دارید. ✨"],
+    "tnx": ["خواهش می‌کنم. 🖤", "لطف دارید. ✨"],
+    "مرسی": [
+        "خواهش می‌کنم، کاری نکردم. 🖤",
+        "قابل شما رو نداشت. ✨",
+        "لطف دارید. 🙏",
+    ],
+    "ممنون": [
+        "خواهش می‌کنم، کاری نکردم. 🖤",
+        "قابل شما رو نداشت. ✨",
+        "لطف دارید. 🙏",
+    ],
+    "ممنونم": ["خواهش می‌کنم. 🖤", "لطف دارید. ✨"],
+    "مرسی ازت": ["خواهش می‌کنم. 🖤", "لطف دارید. ✨"],
+    "goodbye": [
+        "خداحافظ، مراقب خودت باش. 🌙",
+        "به امید دیدار. 🖤",
+        "دلم برات می‌مونه. ✨",
+    ],
+    "bye": ["خداحافظ. 🌙", "مراقب خودت باش. 🖤"],
+    "see you": ["به امید دیدار. 🌙", "منتظرتم. ✨"],
+    "take care": ["مراقب خودت باش. 🖤", "به سلامت. ✨"],
+    "خداحافظ": [
+        "خداحافظ، مراقب خودت باش. 🌙",
+        "به امید دیدار. 🖤",
+        "دلم برات می‌مونه. ✨",
+    ],
+    "خدانگهدار": ["خدا نگهدارت. 🌙", "مراقب خودت باش. 🖤"],
+    "بای": ["خداحافظ. 🌙", "مراقب خودت باش. 🖤"],
+    "فعلاً": ["فعلاً، به امید دیدار. 🌙", "منتظرتم. ✨"],
+    "خدا نگهدار": ["خدا نگهدارت. 🌙", "مراقب خودت باش. 🖤"],
+    "i miss you": ["منم دلم برات تنگ شده. 🖤", "دلت در دل من جا داره. ✨"],
+    "i love you": ["منم دوستت دارم. 🖤", "محبتت برام ارزشمنده. ✨"],
+    "miss you": ["منم دلم برات تنگ شده. 🖤"],
+    "love you": ["منم دوستت دارم. 🖤"],
+    "دلم برات تنگ شده": ["منم دلم برات تنگ شده. 🖤", "دلت در دل من جا داره. ✨"],
+    "دلم برات تنگ شده بود": ["منم دلم برات تنگ شده بود. 🖤", "دلت در دل من جا داره. ✨"],
+    "دوستت دارم": ["منم دوستت دارم. 🖤", "محبتت برام ارزشمنده. ✨"],
+    "عاشقتم": ["منم عاشقتم. 🖤", "محبتت برام ارزشمنده. ✨"],
+    "how are you": ["ممنون که پرسیدی، خوبم. تو چطوری؟ 😊", "خوبم، ممنون. تو چطوری؟ ✨"],
+    "چطوری": ["ممنون که پرسیدی، خوبم. تو چطوری؟ 😊", "خوبم، ممنون. تو چطوری؟ ✨"],
+    "خوبی": ["خوبم، ممنون. تو خوبی؟ 😊", "ممنون که پرسیدی. ✨"],
+    "چه خبر": ["سلامتی، ممنون. تو چه خبر؟ 😊", "خبری نیست، ممنون. ✨"],
+    "سلام": [
+        "سلام، خوشحالم پیام دادی. 🖤",
+        "سلام، چه خبر؟ ✨",
+        "سلام، ممنون از حضورت. 🙏",
+    ],
+    "hi": ["Hi, so happy to hear from you! 🖤", "Hey, what's up? ✨"],
+    "hello": ["Hello, so happy to hear from you! 🖤", "Hey there, what's up? ✨"],
+    "hey": ["Hey, so happy to hear from you! 🖤", "Hi, what's up? ✨"],
+    "where are you": ["دور از دید، اما نزدیک به دل. 🌙", "نیستم، اما به یادتم. ✨"],
+    "کجایی": ["دور از دید، اما نزدیک به دل. 🌙", "نیستم، اما به یادتم. ✨"],
+    "چرا جواب نمی‌دی": ["ببخشید، الان در دسترس نیستم. 🖤", "شرمنده، الان نمی‌تونم. 🙏"],
+    "کی برمی‌گردی": ["زود برمی‌گردم، منتظرم باش. 🌙", "به زودی پیشتم. ✨"],
+    "are you there": ["Not right now, but you're on my mind. 🌙", "Away at the moment, but not forgotten. ✨"],
+    "good night": ["شب بخیر، خواب‌های خوش. 🌙", "شب بخیر، دلم پیشته. ✨"],
+    "good morning": ["صبح بخیر، روزت قشنگ. ☀️", "صبح بخیر، چه روز قشنگی. ✨"],
+    "شب بخیر": ["شب بخیر، خواب‌های خوش. 🌙", "شب بخیر، دلم پیشته. ✨"],
+    "صبح بخیر": ["صبح بخیر، روزت قشنگ. ☀️", "صبح بخیر، چه روز قشنگی. ✨"],
+    "happy birthday": ["مرسی، چه لطفی کردی. 🎂", "ممنون، دلم رو شاد کردی. ✨"],
+    "تولدت مبارک": ["مرسی، چه لطفی کردی. 🎂", "ممنون، دلم رو شاد کردی. ✨"],
+    "congrats": ["مرسی. 🎉", "ممنون، دلم رو شاد کردی. ✨"],
+    "تبریک": ["مرسی. 🎉", "ممنون، دلم رو شاد کردی. ✨"],
+    "sorry": ["مهم نیست، نگران نباش. 🖤", "اشکالی نداره. ✨"],
+    "ببخشید": ["مهم نیست، نگران نباش. 🖤", "اشکالی نداره. ✨"],
+    "شرمنده": ["مهم نیست. 🖤", "اشکالی نداره. ✨"],
+    "urgent": ["دریافت شد، زود خبرت می‌کنم. 🚨", "باشه، زود جوابت رو می‌دم. ⚡"],
+    "فوری": ["دریافت شد، زود خبرت می‌کنم. 🚨", "باشه، زود جوابت رو می‌دم. ⚡"],
+    "اضطراری": ["دریافت شد، زود خبرت می‌کنم. 🚨", "باشه، زود جوابت رو می‌دم. ⚡"],
+    "asap": ["Got it, will reply soon. 🚨", "Understood, talk to you soon. ⚡"],
+    "خدا خیرت بده": ["مرسی، خدا خیرت بده. 🖤", "لطف داری. ✨"],
+    "دستت درد نکنه": ["سلامت باشی. 🖤", "لطف داری. ✨"],
 }
 
 # 🤖 تنظیم Gemini AI
@@ -278,14 +136,16 @@ blacklist = set()
 bot_enabled = True
 stats = {"messages": 0, "replies": 0, "users": set()}
 
+# 📅 حافظه تایم‌های رزروشده: {'1405/06/24': ['10:00', '14:00']}
+booked_slots = {}
+
 # 🎯 مراحل رزرو وقت
 BOOKING_NAME, BOOKING_DATE, BOOKING_TIME, BOOKING_CONFIRM = range(4)
 
-# 🌍 تاریخ امروز ایران به شمسی (با تصحیح ۳ روز خطا)
+# 🌍 تاریخ امروز ایران به شمسی (بدون تصحیح)
 def get_iran_today():
     now_iran = datetime.now(IRAN_TZ)
-    jalali = JalaliDate(now_iran.date())
-    return jalali - timedelta(days=3)
+    return JalaliDate(now_iran.date())
 
 # 🔍 پیدا کردن پاسخ مناسب از روی کلمات کلیدی
 def get_keyword_reply(user_message: str):
@@ -340,7 +200,7 @@ Today's date (Shamsi): {today}
 
 Analyze the user's message below.
 
-- If the message is an EMOTIONAL message (like "I miss you", "I love you", "دلم برات تنگ شده", "دوستت دارم") OR a FAREWELL message, generate a SHORT, warm auto-reply in the SAME language as the message.
+- If the message is an EMOTIONAL message OR a FAREWELL message, generate a SHORT, warm auto-reply in the SAME language as the message.
 - If the message is NOT emotional and NOT a farewell, reply with exactly: "NO_AI_REPLY"
 
 User message: "{user_message}"
@@ -383,12 +243,12 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not bot_enabled:
         return
 
-    # ۱. اول کلمه کلیدی رو چک کن (بدون COOLDOWN - همیشه جواب می‌ده)
+    # ۱. اول کلمه کلیدی رو چک کن (بدون COOLDOWN)
     keyword_reply = get_keyword_reply(user_message)
 
     if keyword_reply:
         await message.reply_text(keyword_reply)
-        return  # ← return کن تا COOLDOWN اعمال نشه
+        return
 
     # ۲. اگه کلمه کلیدی نبود، COOLDOWN رو چک کن
     if user_id in last_reply_time:
@@ -397,9 +257,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # ۳. از AI بپرس
     ai_reply = await get_ai_reply(user_message)
-    # ۴. اگه AI هم جواب نداد، پاسخ معمولی
     reply_text = ai_reply if ai_reply else get_time_based_message()
-    # پاسخ معمولی: با دکمه شیشه‌ای
     await message.reply_text(
         reply_text,
         reply_markup=get_inline_buttons()
@@ -457,13 +315,18 @@ def get_date_keyboard():
     ])
     return InlineKeyboardMarkup(keyboard)
 
-# ⏰ ساخت دکمه‌های ساعت
-def get_time_keyboard():
+# ⏰ ساخت دکمه‌های ساعت (با غیرفعال کردن تایم‌های رزروشده)
+def get_time_keyboard(selected_date: str = None):
     times = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
     keyboard = []
     row = []
+    booked = booked_slots.get(selected_date, []) if selected_date else []
+
     for t in times:
-        row.append(InlineKeyboardButton(t, callback_data=f"time_{t}"))
+        if t in booked:
+            row.append(InlineKeyboardButton(f"❌ {t}", callback_data="already_booked"))
+        else:
+            row.append(InlineKeyboardButton(t, callback_data=f"time_{t}"))
         if len(row) == 2:
             keyboard.append(row)
             row = []
@@ -515,12 +378,18 @@ async def select_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"⏰ Please select a time:\n\n"
         f"👤 Name: {context.user_data['booking_name']}\n"
         f"📅 Date: {date}",
-        reply_markup=get_time_keyboard()
+        reply_markup=get_time_keyboard(date)
     )
     return BOOKING_TIME
 
 async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    # اگه تایم رزروشده بود
+    if query.data == "already_booked":
+        await query.answer("⛔ This time is already booked. Please choose another.", show_alert=True)
+        return BOOKING_TIME
+
     await query.answer()
     time_val = query.data.replace("time_", "")
     context.user_data['booking_time'] = time_val
@@ -549,6 +418,21 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = context.user_data.get('booking_name')
     date = context.user_data.get('booking_date')
     time_val = context.user_data.get('booking_time')
+
+    # ⚠️ چک کن که این تایم قبلاً رزرو نشده باشه
+    if date in booked_slots and time_val in booked_slots[date]:
+        await query.edit_message_text(
+            f"⛔ Sorry, this time was just booked by someone else.\n\n"
+            f"Please choose another time.",
+            reply_markup=get_time_keyboard(date)
+        )
+        return BOOKING_TIME
+
+    # ذخیره تایم رزروشده
+    if date not in booked_slots:
+        booked_slots[date] = []
+    booked_slots[date].append(time_val)
+
     await query.edit_message_text(
         f"✅ Booking confirmed!\n\n"
         f"👤 Name: {name}\n"
@@ -556,6 +440,7 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"⏰ Time: {time_val}\n\n"
         f"I'll get back to you soon. ✨"
     )
+
     if ADMIN_ID:
         try:
             await context.bot.send_message(
@@ -568,6 +453,7 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         except Exception as e:
             print(f"Error notifying admin: {e}")
+
     return ConversationHandler.END
 
 async def back_to_main_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -616,7 +502,7 @@ async def back_to_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"⏰ Please select a time:\n\n"
         f"👤 Name: {context.user_data['booking_name']}\n"
         f"📅 Date: {date}",
-        reply_markup=get_time_keyboard()
+        reply_markup=get_time_keyboard(date)
     )
     return BOOKING_TIME
 
@@ -686,6 +572,18 @@ async def cmd_cooldown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except ValueError:
         await update.message.reply_text("⛔ Invalid number. Example: /cooldown 2")
 
+async def cmd_bookings(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """نمایش لیست رزروها (فقط ادمین)"""
+    if not await check_admin(update):
+        return
+    if not booked_slots:
+        await update.message.reply_text("📅 No bookings yet.")
+        return
+    text = "📅 Booked Slots:\n\n"
+    for date, times in booked_slots.items():
+        text += f"📆 {date}: {', '.join(times)}\n"
+    await update.message.reply_text(text)
+
 async def daily_report(context: ContextTypes.DEFAULT_TYPE):
     global stats
     if ADMIN_ID:
@@ -715,6 +613,7 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler("on", cmd_on))
     application.add_handler(CommandHandler("blacklist", cmd_blacklist))
     application.add_handler(CommandHandler("cooldown", cmd_cooldown))
+    application.add_handler(CommandHandler("bookings", cmd_bookings))
 
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(start_booking, pattern="^book$")],
@@ -730,7 +629,7 @@ if __name__ == '__main__':
                 CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$"),
             ],
             BOOKING_TIME: [
-                CallbackQueryHandler(select_time, pattern="^time_"),
+                CallbackQueryHandler(select_time, pattern="^time_|^already_booked$"),
                 CallbackQueryHandler(back_to_date, pattern="^back_to_date$"),
                 CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$"),
             ],
