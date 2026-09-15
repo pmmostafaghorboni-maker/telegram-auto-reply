@@ -32,45 +32,88 @@ COOLDOWN = 1 #24 * 60 * 60  # 24 hours
 PHONE_NUMBER = "+989058407880"
 INSTAGRAM_ID = "m_gh.tech"
 
-# 🗣️ کلمات کلیدی و پاسخ‌های خودکار (باکلاس و دوستانه)
+# ⚠️⚠️⚠️ این خط رو با نام کاربری و ریپازیتوری خودت عوض کن ⚠️⚠️⚠️
+GITHUB_RAW_BASE = "https://raw.githubusercontent.com/USERNAME/REPO/main/songs"
+
+# 🎵 آهنگ‌ها (۳ دسته، هر دسته ۳ آهنگ)
+SONGS = {
+    "english": {
+        "title": "🇬🇧 English",
+        "songs": [
+            {
+                "title": "Shape of You",
+                "performer": "Ed Sheeran",
+                "url": f"{GITHUB_RAW_BASE}/english1.mp3",
+            },
+            {
+                "title": "Blinding Lights",
+                "performer": "The Weeknd",
+                "url": f"{GITHUB_RAW_BASE}/english2.mp3",
+            },
+            {
+                "title": "Someone Like You",
+                "performer": "Adele",
+                "url": f"{GITHUB_RAW_BASE}/english3.mp3",
+            },
+        ],
+    },
+    "persian": {
+        "title": "🇮🇷 Persian",
+        "songs": [
+            {
+                "title": "آهنگ فارسی ۱",
+                "performer": "خواننده ۱",
+                "url": f"{GITHUB_RAW_BASE}/persian1.mp3",
+            },
+            {
+                "title": "آهنگ فارسی ۲",
+                "performer": "خواننده ۲",
+                "url": f"{GITHUB_RAW_BASE}/persian2.mp3",
+            },
+            {
+                "title": "آهنگ فارسی ۳",
+                "performer": "خواننده ۳",
+                "url": f"{GITHUB_RAW_BASE}/persian3.mp3",
+            },
+        ],
+    },
+    "maddahi": {
+        "title": "🕌 Maddahi",
+        "songs": [
+            {
+                "title": "مداحی ۱",
+                "performer": "مداح ۱",
+                "url": f"{GITHUB_RAW_BASE}/maddahi1.mp3",
+            },
+            {
+                "title": "مداحی ۲",
+                "performer": "مداح ۲",
+                "url": f"{GITHUB_RAW_BASE}/maddahi2.mp3",
+            },
+            {
+                "title": "مداحی ۳",
+                "performer": "مداح ۳",
+                "url": f"{GITHUB_RAW_BASE}/maddahi3.mp3",
+            },
+        ],
+    },
+}
+
+# 🗣️ کلمات کلیدی و پاسخ‌های خودکار
 KEYWORD_REPLIES = {
-    "thanks": [
-        "خواهش می‌کنم، کاری نکردم. 🖤",
-        "قابل شما رو نداشت. ✨",
-        "لطف دارید. 🙏",
-    ],
-    "thank you": [
-        "خواهش می‌کنم، کاری نکردم. 🖤",
-        "قابل شما رو نداشت. ✨",
-        "لطف دارید. 🙏",
-    ],
+    "thanks": ["خواهش می‌کنم، کاری نکردم. 🖤", "قابل شما رو نداشت. ✨", "لطف دارید. 🙏"],
+    "thank you": ["خواهش می‌کنم، کاری نکردم. 🖤", "قابل شما رو نداشت. ✨", "لطف دارید. 🙏"],
     "thx": ["خواهش می‌کنم. 🖤", "لطف دارید. ✨"],
     "tnx": ["خواهش می‌کنم. 🖤", "لطف دارید. ✨"],
-    "مرسی": [
-        "خواهش می‌کنم، کاری نکردم. 🖤",
-        "قابل شما رو نداشت. ✨",
-        "لطف دارید. 🙏",
-    ],
-    "ممنون": [
-        "خواهش می‌کنم، کاری نکردم. 🖤",
-        "قابل شما رو نداشت. ✨",
-        "لطف دارید. 🙏",
-    ],
+    "مرسی": ["خواهش می‌کنم، کاری نکردم. 🖤", "قابل شما رو نداشت. ✨", "لطف دارید. 🙏"],
+    "ممنون": ["خواهش می‌کنم، کاری نکردم. 🖤", "قابل شما رو نداشت. ✨", "لطف دارید. 🙏"],
     "ممنونم": ["خواهش می‌کنم. 🖤", "لطف دارید. ✨"],
     "مرسی ازت": ["خواهش می‌کنم. 🖤", "لطف دارید. ✨"],
-    "goodbye": [
-        "خداحافظ، مراقب خودت باش. 🌙",
-        "به امید دیدار. 🖤",
-        "دلم برات می‌مونه. ✨",
-    ],
+    "goodbye": ["خداحافظ، مراقب خودت باش. 🌙", "به امید دیدار. 🖤", "دلم برات می‌مونه. ✨"],
     "bye": ["خداحافظ. 🌙", "مراقب خودت باش. 🖤"],
     "see you": ["به امید دیدار. 🌙", "منتظرتم. ✨"],
     "take care": ["مراقب خودت باش. 🖤", "به سلامت. ✨"],
-    "خداحافظ": [
-        "خداحافظ، مراقب خودت باش. 🌙",
-        "به امید دیدار. 🖤",
-        "دلم برات می‌مونه. ✨",
-    ],
+    "خداحافظ": ["خداحافظ، مراقب خودت باش. 🌙", "به امید دیدار. 🖤", "دلم برات می‌مونه. ✨"],
     "خدانگهدار": ["خدا نگهدارت. 🌙", "مراقب خودت باش. 🖤"],
     "بای": ["خداحافظ. 🌙", "مراقب خودت باش. 🖤"],
     "فعلاً": ["فعلاً، به امید دیدار. 🌙", "منتظرتم. ✨"],
@@ -87,6 +130,9 @@ KEYWORD_REPLIES = {
     "چطوری": ["ممنون که پرسیدی، خوبم. تو چطوری؟ 😊", "خوبم، ممنون. تو چطوری؟ ✨"],
     "خوبی": ["خوبم، ممنون. تو خوبی؟ 😊", "ممنون که پرسیدی. ✨"],
     "چه خبر": ["سلامتی، ممنون. تو چه خبر؟ 😊", "خبری نیست، ممنون. ✨"],
+    "hi": ["Hi, so happy to hear from you! 🖤", "Hey, what's up? ✨"],
+    "hello": ["Hello, so happy to hear from you! 🖤", "Hey there, what's up? ✨"],
+    "hey": ["Hey, so happy to hear from you! 🖤", "Hi, what's up? ✨"],
     "where are you": ["دور از دید، اما نزدیک به دل. 🌙", "نیستم، اما به یادتم. ✨"],
     "کجایی": ["دور از دید، اما نزدیک به دل. 🌙", "نیستم، اما به یادتم. ✨"],
     "چرا جواب نمی‌دی": ["ببخشید، الان در دسترس نیستم. 🖤", "شرمنده، الان نمی‌تونم. 🙏"],
@@ -127,14 +173,12 @@ last_reply_time = {}
 blacklist = set()
 bot_enabled = True
 stats = {"messages": 0, "replies": 0, "users": set()}
-
-# 📅 حافظه تایم‌های رزروشده: {'1405/06/24': ['10:00', '14:00']}
 booked_slots = {}
 
 # 🎯 مراحل رزرو وقت
 BOOKING_NAME, BOOKING_DATE, BOOKING_TIME, BOOKING_CONFIRM = range(4)
 
-# 🌍 تاریخ امروز ایران به شمسی (بدون تصحیح)
+# 🌍 تاریخ امروز ایران به شمسی
 def get_iran_today():
     now_iran = datetime.now(IRAN_TZ)
     return JalaliDate(now_iran.date())
@@ -156,6 +200,9 @@ def get_inline_buttons():
         ],
         [
             InlineKeyboardButton("📅 Book Appointment", callback_data="book"),
+        ],
+        [
+            InlineKeyboardButton("🎵 My Playlist", callback_data="open_playlist"),
         ]
     ]
     return InlineKeyboardMarkup(keyboard)
@@ -164,9 +211,9 @@ def get_inline_buttons():
 def get_time_based_message():
     now = datetime.now(IRAN_TZ)
     time_now = now.time()
-    weekday = now.weekday()  # 0=دوشنبه, 3=پنجشنبه, 4=جمعه
+    weekday = now.weekday()
 
-    if weekday in (3, 4):  # پنجشنبه و جمعه
+    if weekday in (3, 4):
         return "It's the weekend — I'll get back to you as soon as I can. ✨"
     elif time_now >= dt_time(6, 0) and time_now < dt_time(12, 0):
         return "Good morning! I'm not available right now, but I'll reply as soon as I see your message. ☀️"
@@ -235,19 +282,16 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not bot_enabled:
         return
 
-    # ۱. اول کلمه کلیدی رو چک کن (بدون COOLDOWN)
     keyword_reply = get_keyword_reply(user_message)
 
     if keyword_reply:
         await message.reply_text(keyword_reply)
         return
 
-    # ۲. اگه کلمه کلیدی نبود، COOLDOWN رو چک کن
     if user_id in last_reply_time:
         if current_time - last_reply_time[user_id] < COOLDOWN:
             return
 
-    # ۳. از AI بپرس
     ai_reply = await get_ai_reply(user_message)
     reply_text = ai_reply if ai_reply else get_time_based_message()
     await message.reply_text(
@@ -258,7 +302,38 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     last_reply_time[user_id] = current_time
     stats["replies"] += 1
 
-# 🖱️ مدیریت دکمه‌های Emergency و Instagram
+# 🎵 ساخت دکمه‌های دسته‌بندی آهنگ
+def get_song_categories_keyboard():
+    keyboard = [
+        [
+            InlineKeyboardButton("🇬🇧 English", callback_data="songs_english"),
+            InlineKeyboardButton("🇮🇷 Persian", callback_data="songs_persian"),
+        ],
+        [
+            InlineKeyboardButton("🕌 Maddahi", callback_data="songs_maddahi"),
+        ],
+        [
+            InlineKeyboardButton("🔙 Back", callback_data="back_to_main"),
+        ]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+# 🎵 ساخت دکمه‌های آهنگ‌های یک دسته
+def get_songs_keyboard(category: str):
+    keyboard = []
+    for i, song in enumerate(SONGS[category]["songs"]):
+        keyboard.append([
+            InlineKeyboardButton(
+                f"🎵 {song['title']} - {song['performer']}",
+                callback_data=f"song_{category}_{i}"
+            )
+        ])
+    keyboard.append([
+        InlineKeyboardButton("🔙 Back", callback_data="back_to_categories"),
+    ])
+    return InlineKeyboardMarkup(keyboard)
+
+# 🖱️ مدیریت دکمه‌های Emergency و Instagram و Playlist
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -286,6 +361,57 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             get_time_based_message(),
             reply_markup=get_inline_buttons()
         )
+    elif query.data == "open_playlist":
+        await query.edit_message_text(
+            "🎵 My Playlist:\n\nChoose a category:",
+            reply_markup=get_song_categories_keyboard()
+        )
+
+# 🎵 مدیریت دکمه‌های آهنگ
+async def song_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data
+
+    if data == "songs_english":
+        await query.edit_message_text(
+            "🇬🇧 English Songs:\n\nChoose a song:",
+            reply_markup=get_songs_keyboard("english")
+        )
+    elif data == "songs_persian":
+        await query.edit_message_text(
+            "🇮🇷 Persian Songs:\n\nChoose a song:",
+            reply_markup=get_songs_keyboard("persian")
+        )
+    elif data == "songs_maddahi":
+        await query.edit_message_text(
+            "🕌 Maddahi:\n\nChoose a song:",
+            reply_markup=get_songs_keyboard("maddahi")
+        )
+    elif data == "back_to_categories":
+        await query.edit_message_text(
+            "🎵 My Playlist:\n\nChoose a category:",
+            reply_markup=get_song_categories_keyboard()
+        )
+    elif data.startswith("song_"):
+        # song_english_0 → category=english, index=0
+        parts = data.replace("song_", "").rsplit("_", 1)
+        category = parts[0]
+        index = int(parts[1])
+        song = SONGS[category]["songs"][index]
+
+        try:
+            await context.bot.send_audio(
+                chat_id=query.message.chat_id,
+                audio=song["url"],
+                title=song["title"],
+                performer=song["performer"],
+            )
+            await query.answer("🎵 Sent! Enjoy.", show_alert=False)
+        except Exception as e:
+            print(f"Error sending audio: {e}")
+            await query.answer("❌ Couldn't send. Try another.", show_alert=True)
 
 # 📅 ساخت تقویم ۵ روزه
 def get_date_keyboard():
@@ -307,16 +433,27 @@ def get_date_keyboard():
     ])
     return InlineKeyboardMarkup(keyboard)
 
-# ⏰ ساخت دکمه‌های ساعت (با غیرفعال کردن تایم‌های رزروشده)
+# ⏰ ساخت دکمه‌های ساعت (با غیرفعال کردن تایم‌های گذشته و رزروشده)
 def get_time_keyboard(selected_date: str = None):
     times = ["08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"]
     keyboard = []
     row = []
     booked = booked_slots.get(selected_date, []) if selected_date else []
 
+    now_iran = datetime.now(IRAN_TZ)
+    today_str = get_iran_today().strftime("%Y/%m/%d")
+    is_today = (selected_date == today_str)
+
     for t in times:
         if t in booked:
             row.append(InlineKeyboardButton(f"❌ {t}", callback_data="already_booked"))
+        elif is_today:
+            hour, minute = map(int, t.split(":"))
+            slot_time = now_iran.replace(hour=hour, minute=minute, second=0, microsecond=0)
+            if slot_time <= now_iran:
+                row.append(InlineKeyboardButton(f"⏰ {t}", callback_data="past_time"))
+            else:
+                row.append(InlineKeyboardButton(t, callback_data=f"time_{t}"))
         else:
             row.append(InlineKeyboardButton(t, callback_data=f"time_{t}"))
         if len(row) == 2:
@@ -377,9 +514,12 @@ async def select_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def select_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
 
-    # اگه تایم رزروشده بود
     if query.data == "already_booked":
         await query.answer("⛔ This time is already booked. Please choose another.", show_alert=True)
+        return BOOKING_TIME
+
+    if query.data == "past_time":
+        await query.answer("⏰ This time has already passed. Please choose a future time.", show_alert=True)
         return BOOKING_TIME
 
     await query.answer()
@@ -411,7 +551,6 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
     date = context.user_data.get('booking_date')
     time_val = context.user_data.get('booking_time')
 
-    # ⚠️ چک کن که این تایم قبلاً رزرو نشده باشه
     if date in booked_slots and time_val in booked_slots[date]:
         await query.edit_message_text(
             f"⛔ Sorry, this time was just booked by someone else.\n\n"
@@ -420,7 +559,6 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return BOOKING_TIME
 
-    # ذخیره تایم رزروشده
     if date not in booked_slots:
         booked_slots[date] = []
     booked_slots[date].append(time_val)
@@ -432,6 +570,19 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"⏰ Time: {time_val}\n\n"
         f"I'll get back to you soon. ✨"
     )
+
+    # 🎵 پیشنهاد آهنگ
+    playlist_keyboard = [
+        [InlineKeyboardButton("🎵 Listen to a song while waiting", callback_data="open_playlist")]
+    ]
+    try:
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="🎵 A song for you:\n\nWhile you wait, enjoy one of my favorite songs:",
+            reply_markup=InlineKeyboardMarkup(playlist_keyboard)
+        )
+    except Exception as e:
+        print(f"Error sending playlist: {e}")
 
     if ADMIN_ID:
         try:
@@ -565,7 +716,6 @@ async def cmd_cooldown(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("⛔ Invalid number. Example: /cooldown 2")
 
 async def cmd_bookings(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """نمایش لیست رزروها (فقط ادمین)"""
     if not await check_admin(update):
         return
     if not booked_slots:
@@ -621,7 +771,7 @@ if __name__ == '__main__':
                 CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$"),
             ],
             BOOKING_TIME: [
-                CallbackQueryHandler(select_time, pattern="^time_|^already_booked$"),
+                CallbackQueryHandler(select_time, pattern="^time_|^already_booked$|^past_time$"),
                 CallbackQueryHandler(back_to_date, pattern="^back_to_date$"),
                 CallbackQueryHandler(cancel_booking, pattern="^cancel_booking$"),
             ],
@@ -635,6 +785,10 @@ if __name__ == '__main__':
     )
     application.add_handler(conv_handler)
 
+    # 🎵 هندلر آهنگ (باید قبل از button_handler باشه چون الگوی song_ رو می‌گیره)
+    application.add_handler(CallbackQueryHandler(song_handler, pattern="^(songs_|song_|back_to_categories)"))
+
+    # هندلر عمومی (Emergency + Instagram + Playlist + Back)
     application.add_handler(CallbackQueryHandler(button_handler))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
