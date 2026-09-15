@@ -26,78 +26,70 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 1 #24 * 60 * 60  # 24 hours
+COOLDOWN = 24 * 60 * 60  # 24 hours
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
 INSTAGRAM_ID = "m_gh.tech"
 
-# ⚠️⚠️⚠️ این خط رو با نام کاربری و ریپازیتوری خودت عوض کن ⚠️⚠️⚠️
-GITHUB_RAW_BASE = "https://raw.githubusercontent.com/USERNAME/REPO/main/songs"
-
-# 🎵 آهنگ‌ها (۳ دسته، هر دسته ۳ آهنگ)
-SONGS = {
-    "english": {
-        "title": "🇬🇧 English",
-        "songs": [
-            {
-                "title": "Shape of You",
-                "performer": "Ed Sheeran",
-                "url": f"{GITHUB_RAW_BASE}/english1.mp3",
-            },
-            {
-                "title": "Blinding Lights",
-                "performer": "The Weeknd",
-                "url": f"{GITHUB_RAW_BASE}/english2.mp3",
-            },
-            {
-                "title": "Someone Like You",
-                "performer": "Adele",
-                "url": f"{GITHUB_RAW_BASE}/english3.mp3",
-            },
-        ],
+# 🎵 لیست آهنگ‌ها (تصادفی انتخاب می‌شن) - Google Drive
+SONGS = [
+    {
+        "title": "Maste Eshgh",
+        "performer": "Alireza Talischi",
+        "url": "https://drive.google.com/uc?export=download&id=1phRFMcaF5hwK8VUd3g0c_ZC9eipKweI6",
     },
-    "persian": {
-        "title": "🇮🇷 Persian",
-        "songs": [
-            {
-                "title": "آهنگ فارسی ۱",
-                "performer": "خواننده ۱",
-                "url": f"{GITHUB_RAW_BASE}/persian1.mp3",
-            },
-            {
-                "title": "آهنگ فارسی ۲",
-                "performer": "خواننده ۲",
-                "url": f"{GITHUB_RAW_BASE}/persian2.mp3",
-            },
-            {
-                "title": "آهنگ فارسی ۳",
-                "performer": "خواننده ۳",
-                "url": f"{GITHUB_RAW_BASE}/persian3.mp3",
-            },
-        ],
+    {
+        "title": "Persian Song 1",
+        "performer": "Various Artists",
+        "url": "https://drive.google.com/uc?export=download&id=1yY81IMw970z_tCFIgQB6qTYISe83hNZ1",
     },
-    "maddahi": {
-        "title": "🕌 Maddahi",
-        "songs": [
-            {
-                "title": "مداحی ۱",
-                "performer": "مداح ۱",
-                "url": f"{GITHUB_RAW_BASE}/maddahi1.mp3",
-            },
-            {
-                "title": "مداحی ۲",
-                "performer": "مداح ۲",
-                "url": f"{GITHUB_RAW_BASE}/maddahi2.mp3",
-            },
-            {
-                "title": "مداحی ۳",
-                "performer": "مداح ۳",
-                "url": f"{GITHUB_RAW_BASE}/maddahi3.mp3",
-            },
-        ],
+    {
+        "title": "Persian Song 2",
+        "performer": "Various Artists",
+        "url": "https://drive.google.com/uc?export=download&id=1Bb_y5mAzdQJojp6Yd08qxJwFkA2Nostz",
     },
-}
+    {
+        "title": "Mehdi Ahmadvand",
+        "performer": "Mehdi Ahmadvand",
+        "url": "https://drive.google.com/uc?export=download&id=1OUS-RZ-x94CKVuBcbr21nfnLvhAJX7lM",
+    },
+    {
+        "title": "Farhad",
+        "performer": "Mehdi Ahmadvand",
+        "url": "https://drive.google.com/uc?export=download&id=1vrUy4Yho8wK0Kuq9YKnNVzDgq6yqj6Qk",
+    },
+    {
+        "title": "Jonoon",
+        "performer": "Mehdi Ahmadvand",
+        "url": "https://drive.google.com/uc?export=download&id=1lcC8A9dIFqziY9arhVz6O9NTDjSgL3K0",
+    },
+    {
+        "title": "Podcast 3",
+        "performer": "Mehdi Ahmadvand",
+        "url": "https://drive.google.com/uc?export=download&id=1yW4EClNb-TL0akEzM7brJs8bPSxyFlC6",
+    },
+    {
+        "title": "Remix Zang Bezani",
+        "performer": "Mehdi Ahmadvand",
+        "url": "https://drive.google.com/uc?export=download&id=1jGjGWf1fR1UCmY8Di9mWj2wPGxsD-3NM",
+    },
+    {
+        "title": "Zang Bezani",
+        "performer": "Mehdi Ahmadvand",
+        "url": "https://drive.google.com/uc?export=download&id=1AC3PUo1lp-roqBmAQMUfGYwQoBgFPwGK",
+    },
+    {
+        "title": "Faghat Ba to Eshgham",
+        "performer": "Shadmehr Aghili",
+        "url": "https://drive.google.com/uc?export=download&id=1vivihQm4iU4ZRBo0OKo9wJdmctpQqOzI",
+    },
+    {
+        "title": "Elaheye Naz",
+        "performer": "Mehdi Ahmadvand",
+        "url": "https://drive.google.com/uc?export=download&id=18DIw4quX12SkX_OJDyL926M77WhDkkor",
+    },
+]
 
 # 🗣️ کلمات کلیدی و پاسخ‌های خودکار
 KEYWORD_REPLIES = {
@@ -130,6 +122,7 @@ KEYWORD_REPLIES = {
     "چطوری": ["ممنون که پرسیدی، خوبم. تو چطوری؟ 😊", "خوبم، ممنون. تو چطوری؟ ✨"],
     "خوبی": ["خوبم، ممنون. تو خوبی؟ 😊", "ممنون که پرسیدی. ✨"],
     "چه خبر": ["سلامتی، ممنون. تو چه خبر؟ 😊", "خبری نیست، ممنون. ✨"],
+    "سلام": ["سلام، خوشحالم پیام دادی. 🖤", "سلام، چه خبر؟ ✨", "سلام، ممنون از حضورت. 🙏"],
     "hi": ["Hi, so happy to hear from you! 🖤", "Hey, what's up? ✨"],
     "hello": ["Hello, so happy to hear from you! 🖤", "Hey there, what's up? ✨"],
     "hey": ["Hey, so happy to hear from you! 🖤", "Hi, what's up? ✨"],
@@ -202,7 +195,7 @@ def get_inline_buttons():
             InlineKeyboardButton("📅 Book Appointment", callback_data="book"),
         ],
         [
-            InlineKeyboardButton("🎵 My Playlist", callback_data="open_playlist"),
+            InlineKeyboardButton("🎵 Play Music", callback_data="play_music"),
         ]
     ]
     return InlineKeyboardMarkup(keyboard)
@@ -302,38 +295,51 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     last_reply_time[user_id] = current_time
     stats["replies"] += 1
 
-# 🎵 ساخت دکمه‌های دسته‌بندی آهنگ
-def get_song_categories_keyboard():
-    keyboard = [
-        [
-            InlineKeyboardButton("🇬🇧 English", callback_data="songs_english"),
-            InlineKeyboardButton("🇮🇷 Persian", callback_data="songs_persian"),
-        ],
-        [
-            InlineKeyboardButton("🕌 Maddahi", callback_data="songs_maddahi"),
-        ],
-        [
-            InlineKeyboardButton("🔙 Back", callback_data="back_to_main"),
-        ]
-    ]
-    return InlineKeyboardMarkup(keyboard)
+# 🎵 پخش آهنگ تصادفی
+async def play_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
 
-# 🎵 ساخت دکمه‌های آهنگ‌های یک دسته
-def get_songs_keyboard(category: str):
-    keyboard = []
-    for i, song in enumerate(SONGS[category]["songs"]):
-        keyboard.append([
-            InlineKeyboardButton(
-                f"🎵 {song['title']} - {song['performer']}",
-                callback_data=f"song_{category}_{i}"
-            )
-        ])
-    keyboard.append([
-        InlineKeyboardButton("🔙 Back", callback_data="back_to_categories"),
-    ])
-    return InlineKeyboardMarkup(keyboard)
+    song = random.choice(SONGS)
 
-# 🖱️ مدیریت دکمه‌های Emergency و Instagram و Playlist
+    try:
+        sent_message = await context.bot.send_audio(
+            chat_id=query.message.chat_id,
+            audio=song["url"],
+            title=song["title"],
+            performer=song["performer"],
+            caption="🎵 Enjoy! This message will be deleted in 5 minutes."
+        )
+
+        # ⏰ زمان‌بندی برای پاک کردن پیام بعد از ۵ دقیقه
+        context.job_queue.run_once(
+            delete_message_job,
+            when=300,  # ۵ دقیقه = ۳۰۰ ثانیه
+            data={
+                "chat_id": sent_message.chat_id,
+                "message_id": sent_message.message_id,
+            },
+            name=f"delete_{sent_message.message_id}"
+        )
+
+        await query.answer("🎵 Sent! Enjoy.", show_alert=False)
+    except Exception as e:
+        print(f"Error sending audio: {e}")
+        await query.answer("❌ Couldn't send. Try again.", show_alert=True)
+
+# 🗑️ تابع پاک کردن پیام آهنگ
+async def delete_message_job(context: ContextTypes.DEFAULT_TYPE):
+    job = context.job
+    try:
+        await context.bot.delete_message(
+            chat_id=job.data["chat_id"],
+            message_id=job.data["message_id"]
+        )
+        print(f"Deleted message {job.data['message_id']}")
+    except Exception as e:
+        print(f"Error deleting message: {e}")
+
+# 🖱️ مدیریت دکمه‌ها
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -361,57 +367,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             get_time_based_message(),
             reply_markup=get_inline_buttons()
         )
-    elif query.data == "open_playlist":
-        await query.edit_message_text(
-            "🎵 My Playlist:\n\nChoose a category:",
-            reply_markup=get_song_categories_keyboard()
-        )
-
-# 🎵 مدیریت دکمه‌های آهنگ
-async def song_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    data = query.data
-
-    if data == "songs_english":
-        await query.edit_message_text(
-            "🇬🇧 English Songs:\n\nChoose a song:",
-            reply_markup=get_songs_keyboard("english")
-        )
-    elif data == "songs_persian":
-        await query.edit_message_text(
-            "🇮🇷 Persian Songs:\n\nChoose a song:",
-            reply_markup=get_songs_keyboard("persian")
-        )
-    elif data == "songs_maddahi":
-        await query.edit_message_text(
-            "🕌 Maddahi:\n\nChoose a song:",
-            reply_markup=get_songs_keyboard("maddahi")
-        )
-    elif data == "back_to_categories":
-        await query.edit_message_text(
-            "🎵 My Playlist:\n\nChoose a category:",
-            reply_markup=get_song_categories_keyboard()
-        )
-    elif data.startswith("song_"):
-        # song_english_0 → category=english, index=0
-        parts = data.replace("song_", "").rsplit("_", 1)
-        category = parts[0]
-        index = int(parts[1])
-        song = SONGS[category]["songs"][index]
-
-        try:
-            await context.bot.send_audio(
-                chat_id=query.message.chat_id,
-                audio=song["url"],
-                title=song["title"],
-                performer=song["performer"],
-            )
-            await query.answer("🎵 Sent! Enjoy.", show_alert=False)
-        except Exception as e:
-            print(f"Error sending audio: {e}")
-            await query.answer("❌ Couldn't send. Try another.", show_alert=True)
+    elif query.data == "play_music":
+        await play_music(update, context)
 
 # 📅 ساخت تقویم ۵ روزه
 def get_date_keyboard():
@@ -573,12 +530,12 @@ async def confirm_booking(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # 🎵 پیشنهاد آهنگ
     playlist_keyboard = [
-        [InlineKeyboardButton("🎵 Listen to a song while waiting", callback_data="open_playlist")]
+        [InlineKeyboardButton("🎵 Play Music", callback_data="play_music")]
     ]
     try:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="🎵 A song for you:\n\nWhile you wait, enjoy one of my favorite songs:",
+            text="🎵 A song for you:\n\nWhile you wait, enjoy a random song:",
             reply_markup=InlineKeyboardMarkup(playlist_keyboard)
         )
     except Exception as e:
@@ -785,10 +742,6 @@ if __name__ == '__main__':
     )
     application.add_handler(conv_handler)
 
-    # 🎵 هندلر آهنگ (باید قبل از button_handler باشه چون الگوی song_ رو می‌گیره)
-    application.add_handler(CallbackQueryHandler(song_handler, pattern="^(songs_|song_|back_to_categories)"))
-
-    # هندلر عمومی (Emergency + Instagram + Playlist + Back)
     application.add_handler(CallbackQueryHandler(button_handler))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
