@@ -35,7 +35,7 @@ ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
 COOLDOWN = 1#24 * 60 * 60  # 24 hours
-AUTO_DELETE_SECONDS = 1#300  # ۵ دقیقه (برای تست: 10)
+AUTO_DELETE_SECONDS = 300  # ۵ دقیقه (برای تست: 10)
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
