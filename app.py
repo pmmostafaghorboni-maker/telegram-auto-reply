@@ -34,8 +34,8 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 1 #24 * 60 * 60  # 24 hours
-AUTO_DELETE_SECONDS = 1  # ۵ دقیقه (برای تست: 10)
+COOLDOWN = 24 * 60 * 60  # 24 hours
+AUTO_DELETE_SECONDS = 300  # ۵ دقیقه (برای تست: 10)
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
@@ -306,7 +306,8 @@ async def play_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
             audio=song["url"],
             title=song["title"],
             performer=song["performer"],
-            caption="🎵 Enjoy! This message will be deleted in 5 minutes."
+            caption="🎵 Enjoy!
+            This message will be deleted in 5 minutes."
         )
 
         job_name = f"delete_{sent_message.message_id}"
