@@ -237,14 +237,11 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_time = time.time()
     user_message = message.text or ""
 
-    # 🚫 اگه پیام از طرف خود ادمین بود، نادیده بگیر
-    if str(user_id) == str(ADMIN_ID):
-        logger.info(f"⏭️ Skipped message from admin ({user_id})")
-        return
-
-    # 🚫 اگه پیام خروجی از طرف خودمون باشه (business outgoing)، نادیده بگیر
+    # 🎯 تشخیص: پیام از کجا اومده؟
+    # اگه Business Message هست و فرستنده ADMIN_ID باشه = پیام خروجی خودت به دوستت → نادیده بگیر
+    # اگه Business Message نیست (چت با خود بات) → جواب بده (حتی اگه ADMIN_ID باشه)
     if update.business_message:
-        if update.business_message.from_user and str(update.business_message.from_user.id) == str(ADMIN_ID):
+        if str(user_id) == str(ADMIN_ID):
             logger.info(f"⏭️ Skipped outgoing business message from admin")
             return
 
@@ -355,7 +352,7 @@ def cancel_auto_delete(context: ContextTypes.DEFAULT_TYPE, message_id: int):
         job.schedule_removal()
         logger.info(f"🚫 Cancelled auto-delete for message {message_id}")
 
-# 🖱️ مدیریت دکمه‌های اصلی (فقط ۴ دکمه - بقیه می‌رن به conv_handler)
+# 🖱️ مدیریت دکمه‌های اصلی
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     data = query.data
@@ -389,7 +386,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             get_time_based_message(),
             reply_markup=get_inline_buttons()
         )
-        # دوباره حذف خودکار
         context.job_queue.run_once(
             auto_delete_main_message,
             when=AUTO_DELETE_SECONDS,
