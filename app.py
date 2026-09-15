@@ -34,8 +34,8 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 1 #24 * 60 * 60  # 24 hours
-AUTO_DELETE_SECONDS = 300  # ۵ دقیقه (برای تست: 10)
+COOLDOWN = 1#24 * 60 * 60  # 24 hours
+AUTO_DELETE_SECONDS = 1#300  # ۵ دقیقه (برای تست: 10)
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
@@ -237,6 +237,17 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     current_time = time.time()
     user_message = message.text or ""
 
+    # 🚫 اگه پیام از طرف خود ادمین بود، نادیده بگیر
+    if str(user_id) == str(ADMIN_ID):
+        logger.info(f"⏭️ Skipped message from admin ({user_id})")
+        return
+
+    # 🚫 اگه پیام خروجی از طرف خودمون باشه (business outgoing)، نادیده بگیر
+    if update.business_message:
+        if update.business_message.from_user and str(update.business_message.from_user.id) == str(ADMIN_ID):
+            logger.info(f"⏭️ Skipped outgoing business message from admin")
+            return
+
     stats["messages"] += 1
     stats["users"].add(user_id)
 
@@ -344,14 +355,10 @@ def cancel_auto_delete(context: ContextTypes.DEFAULT_TYPE, message_id: int):
         job.schedule_removal()
         logger.info(f"🚫 Cancelled auto-delete for message {message_id}")
 
-# 🖱️ مدیریت دکمه‌های اصلی
+# 🖱️ مدیریت دکمه‌های اصلی (فقط ۴ دکمه - بقیه می‌رن به conv_handler)
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     data = query.data
-
-    # ⚠️ فقط دکمه‌های خودمون رو handle کن، بقیه رو ول کن به ConversationHandler
-    if data not in ("urgent", "instagram", "back_to_main", "play_music"):
-        return
 
     if data == "play_music":
         cancel_auto_delete(context, query.message.message_id)
@@ -764,10 +771,13 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler("bookings", cmd_bookings))
 
     # ⚠️ ترتیب مهمه!
-    # 1️⃣ اول button_handler (فقط دکمه‌های اصلی رو می‌گیره)
-    application.add_handler(CallbackQueryHandler(button_handler))
+    # 1️⃣ اول button_handler با pattern (فقط دکمه‌های اصلی)
+    application.add_handler(CallbackQueryHandler(
+        button_handler,
+        pattern="^(urgent|instagram|back_to_main|play_music)$"
+    ))
 
-    # 2️⃣ بعد ConversationHandler (فقط برای رزرو)
+    # 2️⃣ بعد ConversationHandler
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(start_booking, pattern="^book$")],
         states={
