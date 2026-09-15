@@ -35,7 +35,7 @@ ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
 COOLDOWN = 1 #24 * 60 * 60  # 24 hours
-AUTO_DELETE_SECONDS = 10  # 🧪 تست: ۱۰ ثانیه (بعداً 300 کن)
+AUTO_DELETE_SECONDS = 1  # ۵ دقیقه (برای تست: 10)
 
 # 📞 اطلاعات تماس شما
 PHONE_NUMBER = "+989058407880"
@@ -263,7 +263,7 @@ async def auto_reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=get_inline_buttons()
     )
 
-    # 🗑️ حذف خودکار پیام اصلی بعد از ۵ دقیقه
+    # 🗑️ حذف خودکار پیام اصلی
     job_name = f"autodelete_{sent_message.message_id}"
     context.job_queue.run_once(
         auto_delete_main_message,
@@ -312,7 +312,7 @@ async def play_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
         job_name = f"delete_{sent_message.message_id}"
         context.job_queue.run_once(
             delete_message_job,
-            when=300,
+            when=AUTO_DELETE_SECONDS,
             data={
                 "chat_id": sent_message.chat_id,
                 "message_id": sent_message.message_id,
@@ -320,11 +320,8 @@ async def play_music(update: Update, context: ContextTypes.DEFAULT_TYPE):
             name=job_name
         )
         logger.info(f"✅ Scheduled delete for song message {sent_message.message_id} (job: {job_name})")
-
-        await query.answer("🎵 Sent! Enjoy.", show_alert=False)
     except Exception as e:
         logger.error(f"❌ Error sending audio: {e}")
-        await query.answer("❌ Couldn't send. Try again.", show_alert=True)
 
 # 🗑️ حذف پیام آهنگ
 async def delete_message_job(context: ContextTypes.DEFAULT_TYPE):
@@ -347,25 +344,30 @@ def cancel_auto_delete(context: ContextTypes.DEFAULT_TYPE, message_id: int):
         job.schedule_removal()
         logger.info(f"🚫 Cancelled auto-delete for message {message_id}")
 
-# 🖱️ مدیریت دکمه‌ها
+# 🖱️ مدیریت دکمه‌های اصلی
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+    data = query.data
 
-    if query.data == "play_music":
+    # ⚠️ فقط دکمه‌های خودمون رو handle کن، بقیه رو ول کن به ConversationHandler
+    if data not in ("urgent", "instagram", "back_to_main", "play_music"):
+        return
+
+    if data == "play_music":
         cancel_auto_delete(context, query.message.message_id)
         await play_music(update, context)
         return
 
     await query.answer()
 
-    if query.data == "urgent":
+    if data == "urgent":
         cancel_auto_delete(context, query.message.message_id)
         keyboard = [[InlineKeyboardButton("🔙 Back", callback_data="back_to_main")]]
         await query.edit_message_text(
             f"🚨 Emergency Contact:\n📞 Phone: {PHONE_NUMBER}\n\nPlease call if it's urgent.",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    elif query.data == "instagram":
+    elif data == "instagram":
         cancel_auto_delete(context, query.message.message_id)
         keyboard = [
             [InlineKeyboardButton("📱 Open Instagram", url=f"https://instagram.com/{INSTAGRAM_ID}")],
@@ -375,7 +377,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"📱 My Instagram:\n\n@{INSTAGRAM_ID}\n\nTap the button below to open my profile.",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-    elif query.data == "back_to_main":
+    elif data == "back_to_main":
         await query.edit_message_text(
             get_time_based_message(),
             reply_markup=get_inline_buttons()
@@ -761,6 +763,11 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler("cooldown", cmd_cooldown))
     application.add_handler(CommandHandler("bookings", cmd_bookings))
 
+    # ⚠️ ترتیب مهمه!
+    # 1️⃣ اول button_handler (فقط دکمه‌های اصلی رو می‌گیره)
+    application.add_handler(CallbackQueryHandler(button_handler))
+
+    # 2️⃣ بعد ConversationHandler (فقط برای رزرو)
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(start_booking, pattern="^book$")],
         states={
@@ -789,12 +796,10 @@ if __name__ == '__main__':
     )
     application.add_handler(conv_handler)
 
-    application.add_handler(CallbackQueryHandler(button_handler))
+    # 3️⃣ آخر message handler
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, auto_reply))
 
     application.job_queue.run_daily(daily_report, time=dt_time(21, 0))
-
-    # 🧪 تست job - بعد از 30 ثانیه از استارت
     application.job_queue.run_once(test_job, when=30)
 
     logger.info("🚀 Bot is running...")
