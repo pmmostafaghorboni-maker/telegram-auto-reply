@@ -34,7 +34,7 @@ BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = "6600182795"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 AUTO_REPLY_TEXT = "Hi! I'm not available right now, but I'll get back to you as soon as possible.✨"
-COOLDOWN = 1#24 * 60 * 60  # 24 hours
+COOLDOWN = 24 * 60 * 60  # 24 hours
 AUTO_DELETE_SECONDS = 300  # ۵ دقیقه (برای تست: 10)
 
 # 📞 اطلاعات تماس شما
@@ -98,10 +98,6 @@ KEYWORD_REPLIES = {
     "چطوری": ["ممنون که پرسیدی، خوبم. تو چطوری؟ 😊", "خوبم، ممنون. تو چطوری؟ ✨"],
     "خوبی": ["خوبم، ممنون. تو خوبی؟ 😊", "ممنون که پرسیدی. ✨"],
     "چه خبر": ["سلامتی، ممنون. تو چه خبر؟ 😊", "خبری نیست، ممنون. ✨"],
-    "سلام": ["سلام، خوشحالم پیام دادی. 🖤", "سلام، چه خبر؟ ✨", "سلام، ممنون از حضورت. 🙏"],
-    "hi": ["Hi, so happy to hear from you! 🖤", "Hey, what's up? ✨"],
-    "hello": ["Hello, so happy to hear from you! 🖤", "Hey there, what's up? ✨"],
-    "hey": ["Hey, so happy to hear from you! 🖤", "Hi, what's up? ✨"],
     "where are you": ["دور از دید، اما نزدیک به دل. 🌙", "نیستم، اما به یادتم. ✨"],
     "کجایی": ["دور از دید، اما نزدیک به دل. 🌙", "نیستم، اما به یادتم. ✨"],
     "چرا جواب نمی‌دی": ["ببخشید، الان در دسترس نیستم. 🖤", "شرمنده، الان نمی‌تونم. 🙏"],
